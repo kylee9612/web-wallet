@@ -1,0 +1,60 @@
+plugins {
+	id 'java'
+	id 'war'
+	id 'org.springframework.boot' version '2.7.5'
+	id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+	id 'org.springframework.experimental.aot' version '0.12.1'
+	id 'org.hibernate.orm'
+}
+
+group = 'com.axiasoft'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '17'
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	maven { url 'https://repo.spring.io/release' }
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'io.openliberty.features:grpcClient-1.0:22.0.0.7'
+	compileOnly 'org.projectlombok:lombok'
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+	annotationProcessor 'org.projectlombok:lombok'
+	providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+	implementation 'org.xrpl:xrpl4j-crypto-parent:2.5.1'
+	implementation 'org.xrpl:xrpl4j-crypto-core:2.5.1'
+	implementation 'org.xrpl:xrpl4j-client:2.5.1'
+	implementation 'org.xrpl:xrpl4j-bom:2.5.1'
+	implementation 'org.xrpl:xrpl4j-binary-codec:2.5.1'
+	implementation 'org.xrpl:xrpl4j-keypairs:2.5.1'
+	implementation 'org.xrpl:xrpl4j-address-codec:2.5.1'
+	implementation 'org.xrpl:xrpl4j-crypto-bouncycastle:2.5.1'
+	// https://mvnrepository.com/artifact/org.immutables/value
+	compileOnly group: 'org.immutables', name: 'value', version: '2.9.2'
+
+
+	// https://mvnrepository.com/artifact/com.mysql/mysql-connector-j
+	implementation 'com.mysql:mysql-connector-j:8.0.31'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
+
+tasks.named('bootBuildImage') {
+	builder = 'paketobuildpacks/builder:tiny'
+	environment = ['BP_NATIVE_IMAGE': 'true']
+}

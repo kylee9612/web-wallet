@@ -1,0 +1,9 @@
+spring:
+  datasource:
+    url: jdbc:mysql://127.0.0.1:13308/?useUnicode=true&autoReconnect=true&useSSL=false&characterEncoding=utf8&allowMultiQueries=true&serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true
+    username: dbadmin
+    password: Coinbit#dba12~!
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+xrp:
+  url: "http://localhost:51234/"
