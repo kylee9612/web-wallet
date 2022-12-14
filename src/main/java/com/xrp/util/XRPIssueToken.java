@@ -1,4 +1,4 @@
-package com.axiasoft.util;
+package com.xrp.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.primitives.UnsignedInteger;

@@ -1,4 +1,4 @@
-package com.axiasoft.common;
+package com.xrp.common;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;

@@ -1,4 +1,4 @@
-package com.axiasoft.xrptest;
+package com.xrp.xrptest;
 
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;

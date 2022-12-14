@@ -1,16 +1,9 @@
-package com.axiasoft.xrptest;
+package com.xrp.xrptest;
 
-import com.axiasoft.config.AppConfig;
-import com.axiasoft.controller.XRPController;
-import com.axiasoft.service.XrpClientService;
-import com.axiasoft.service.XrpWalletService;
-import com.axiasoft.util.XRPTest;
-import com.axiasoft.util.XRPTestUtil;
+import  com.xrp.service.XrpClientService;
+import com.xrp.service.XrpWalletService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.xrpl.xrpl4j.model.client.accounts.AccountInfoRequestParams;
 import org.xrpl.xrpl4j.model.transactions.Address;
 import org.xrpl.xrpl4j.wallet.Wallet;
 

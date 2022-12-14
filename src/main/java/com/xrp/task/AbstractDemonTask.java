@@ -1,6 +1,6 @@
-package com.axiasoft.task;
+package com.xrp.task;
 
-import com.axiasoft.common.DicKey;
+import com.xrp.common.DicKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

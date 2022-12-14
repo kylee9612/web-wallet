@@ -1,9 +1,8 @@
-package com.axiasoft.util;
+package com.xrp.util;
 
-import com.axiasoft.config.AppConfig;
-import com.axiasoft.controller.XRPController;
-import com.axiasoft.controller.XRPWalletController;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.xrp.config.AppConfig;
+import com.xrp.controller.XRPController;
+import com.xrp.controller.XRPWalletController;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.xrpl.xrpl4j.wallet.Wallet;

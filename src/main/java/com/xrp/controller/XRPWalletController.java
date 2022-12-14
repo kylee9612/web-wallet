@@ -1,7 +1,5 @@
-package com.axiasoft.controller;
+package com.xrp.controller;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.xrpl.xrpl4j.keypairs.KeyPair;
 import org.xrpl.xrpl4j.wallet.DefaultWalletFactory;

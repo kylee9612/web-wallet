@@ -1,7 +1,6 @@
-package com.axiasoft.util;
+package com.xrp.util;
 
-import com.axiasoft.controller.XRPController;
-import com.axiasoft.service.XrpClientService;
+import com.xrp.service.XrpClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 

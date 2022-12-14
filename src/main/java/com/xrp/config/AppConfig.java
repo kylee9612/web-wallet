@@ -1,17 +1,14 @@
-package com.axiasoft.config;
+package com.xrp.config;
 
-import com.axiasoft.controller.XRPController;
-import com.axiasoft.controller.XRPWalletController;
-import com.axiasoft.service.XrpClientService;
-import com.axiasoft.service.XrpWalletService;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.beans.factory.config.PropertiesFactoryBean;
+import com.xrp.controller.XRPController;
+import com.xrp.controller.XRPWalletController;
+import com.xrp.service.XrpClientService;
+import com.xrp.service.XrpWalletService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
-import org.springframework.core.io.ClassPathResource;
 
 @Configuration
 @ComponentScan(basePackageClasses = SpringApplication.class)
