@@ -40,10 +40,16 @@ public class XRPController extends Thread {
 
     @Value("${xrp.url}")
     private String url;
+
+    @Value("${xrp.test}")
+    private boolean isTest;
     private final FaucetClient faucetClient = FaucetClient.construct(HttpUrl.get("https://faucet.altnet.rippletest.net"));
 
     public XRPController(){
         System.out.println(url);
+        if(url == null){
+            url = "http://localhost:51234/";
+        }
         xrplClient = new XrplClient(HttpUrl.get(url));
     }
 

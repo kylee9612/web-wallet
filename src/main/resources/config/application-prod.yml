@@ -7,3 +7,4 @@ spring:
 
 xrp:
   url: http://localhost:51234/
+  test: false

@@ -1,17 +1,13 @@
 package com.xrp.util;
 
-import com.xrp.config.AppConfig;
 import com.xrp.controller.XRPController;
 import com.xrp.controller.XRPWalletController;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.xrpl.xrpl4j.wallet.Wallet;
 
 public class XRPTestUtil {
     public static void main(String[] args) {
-        ApplicationContext ac = new AnnotationConfigApplicationContext(AppConfig.class);
-        XRPController xrpController = ac.getBean("xrpController",XRPController.class);
-        XRPWalletController xrpWalletController = ac.getBean("walletController",XRPWalletController.class);
+        XRPController xrpController = new XRPController();
+        XRPWalletController xrpWalletController = new XRPWalletController();
         String pubKey = "EDCB72D7DFFDDEA267F256A9FFAD3D356C66201E9BF14BBEBD7E7C8691396AEADA";
         String priKey = "EDDEC5B09C3C0CBD2E80CAC17C7C850E35B094E3D3DF31E03E23F89E0ECA5A4F76";
         Wallet test = xrpWalletController.getTestWallet(pubKey, priKey);
