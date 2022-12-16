@@ -1,27 +1,29 @@
 package com.xrp.controller;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
 import org.xrpl.xrpl4j.wallet.Wallet;
 
+@RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/v2/xrp")
+@RequestMapping(value = "api/v2/xrp")
 public class MainController {
 
-    @Autowired
-    @Qualifier("xrpController")
-    public XRPController xrpController;
+    private final XRPController xrpController;
 
-    @Autowired
-    @Qualifier("walletController")
-    public XRPWalletController xrpWalletController;
+    private final XRPWalletController xrpWalletController;
 
-    @GetMapping(value = "/generate", produces = "application/json")
-    public Wallet newWallet() {
+    @GetMapping("/generate")
+    public String newWallet() {
         System.out.println("generate");
-        return xrpWalletController.generateWallet();
+        return xrpWalletController.generateWallet().toString();
+    }
+
+    @GetMapping("/test")
+    public String test(){
+        return "test";
     }
 }

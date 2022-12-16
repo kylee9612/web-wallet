@@ -1,5 +1,6 @@
 package com.xrp.config;
 
+import com.xrp.controller.MainController;
 import com.xrp.controller.XRPController;
 import com.xrp.controller.XRPWalletController;
 import org.springframework.context.annotation.Bean;
@@ -19,5 +20,4 @@ public class AppConfig {
     public XRPWalletController walletController() {
         return new XRPWalletController();
     }
-
 }
