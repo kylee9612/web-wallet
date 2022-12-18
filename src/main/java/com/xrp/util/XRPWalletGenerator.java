@@ -14,6 +14,5 @@ public class XRPWalletGenerator{
         xrpWalletController.walletInfo(testWallet);
         xrpController.fundFaucet(testWallet.classicAddress());
         xrpController.checkBalance(testWallet.classicAddress());
-        XRPTestUtil.main(args);
     }
 }
