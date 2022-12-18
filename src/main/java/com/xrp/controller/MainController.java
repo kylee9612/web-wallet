@@ -24,7 +24,7 @@ public class MainController {
     public String newWallet() {
         System.out.println("generate");
         Wallet wallet = xrpWalletController.generateWallet();
-        System.out.println(xrpController.accountTransactionsResult(wallet.classicAddress()));
+//        System.out.println(xrpController.accountTransactionsResult(wallet.classicAddress()));
         return wallet.toString();
     }
 

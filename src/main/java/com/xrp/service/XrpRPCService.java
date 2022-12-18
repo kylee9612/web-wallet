@@ -8,6 +8,7 @@ import org.xrpl.xrpl4j.client.JsonRpcClient;
 import org.xrpl.xrpl4j.client.JsonRpcClientErrorException;
 import org.xrpl.xrpl4j.client.JsonRpcRequest;
 import org.xrpl.xrpl4j.client.XrplClient;
+import org.xrpl.xrpl4j.model.client.XrplRequestParams;
 import org.xrpl.xrpl4j.model.transactions.SetRegularKey;
 import org.xrpl.xrpl4j.wallet.Wallet;
 
@@ -21,11 +22,15 @@ public class XrpRPCService {
     @Value("${xrp.url}")
     private static String url;
 
-    public JsonRpcRequest jsonRpcRequest(Wallet wallet) throws JSONException, JsonRpcClientErrorException {
+    private void init(){
         if (jsonRpcClient == null && xrplClient == null) {
             xrplClient = new XrplClient(HttpUrl.get(url));
             jsonRpcClient = xrplClient.getJsonRpcClient();
         }
+    }
+
+    public JsonRpcRequest jsonRpcRequest(Wallet wallet) throws JSONException, JsonRpcClientErrorException {
+        init();
         SetRegularKey setRegularKey = SetRegularKey
                 .builder()
                 .signingPublicKey(wallet.publicKey())

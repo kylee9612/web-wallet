@@ -79,20 +79,20 @@ public class XRPController extends Thread {
         return xrpClientService.checkBalance(classicAddress);
     }
 
-    public AccountInfoResult getAccountInfo(AccountInfoRequestParams resultParams) {
-        return xrpClientService.getAccountInfo(resultParams);
-    }
-
-    public AccountInfoRequestParams getAccountInfoRequest(Address classicAddress) {
-        return xrpWalletService.getAccountInfoRequest(classicAddress);
-    }
-
     public SetRegularKey getRegularKey(Wallet wallet){
         return xrpClientService.getRegularKey(wallet);
     }
 
     public void sendXRP(Wallet testWallet, String addressTo) throws JsonRpcClientErrorException, JsonProcessingException, InterruptedException {
         xrpClientService.sendXRP(testWallet,addressTo);
+    }
+
+    public AccountInfoResult getAccountInfo(AccountInfoRequestParams resultParams) {
+        return xrpClientService.getAccountInfo(resultParams);
+    }
+
+    public AccountInfoRequestParams getAccountInfoRequest(Address classicAddress) {
+        return xrpWalletService.getAccountInfoRequest(classicAddress);
     }
 
     private boolean validateWallet(Wallet wallet) {

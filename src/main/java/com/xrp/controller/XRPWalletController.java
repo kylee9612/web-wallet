@@ -25,14 +25,12 @@ import org.xrpl.xrpl4j.wallet.DefaultWalletFactory;
 import org.xrpl.xrpl4j.wallet.Wallet;
 import org.xrpl.xrpl4j.wallet.WalletFactory;
 
+import java.util.Arrays;
+
 @Controller
 public class XRPWalletController {
 
     private static final Logger log = LoggerFactory.getLogger(XRPWalletController.class);
-
-    private final WalletFactory walletFactory = DefaultWalletFactory.getInstance();
-
-    private final KeyPairService keyPairService = DefaultKeyPairService.getInstance();
 
     @Autowired
     private SignService signService;
@@ -46,9 +44,9 @@ public class XRPWalletController {
         Wallet wallet = xrpWalletService.generateWallet();
         signService.signUsingSingleKeySignatureService(wallet);
         try {
-            System.out.println(xrpController.getRegularKey(wallet));
+            log.info(xrpController.getRegularKey(wallet).toString());
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(Arrays.toString(e.getStackTrace()));
         }
         return wallet;
     }

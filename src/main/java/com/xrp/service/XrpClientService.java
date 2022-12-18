@@ -26,6 +26,7 @@ import org.xrpl.xrpl4j.model.client.common.LedgerIndex;
 import org.xrpl.xrpl4j.model.client.common.LedgerSpecifier;
 import org.xrpl.xrpl4j.model.client.fees.FeeResult;
 import org.xrpl.xrpl4j.model.client.ledger.LedgerRequestParams;
+import org.xrpl.xrpl4j.model.client.serverinfo.ServerInfoResult;
 import org.xrpl.xrpl4j.model.client.transactions.SubmitResult;
 import org.xrpl.xrpl4j.model.client.transactions.TransactionRequestParams;
 import org.xrpl.xrpl4j.model.client.transactions.TransactionResult;
@@ -34,6 +35,7 @@ import org.xrpl.xrpl4j.model.transactions.*;
 import org.xrpl.xrpl4j.wallet.Wallet;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -52,12 +54,12 @@ public class XrpClientService {
     public XrpClientService() {
         System.out.println(url);
         if (url == null) {
-            url = "http://15.165.156.20:51234/";
-
+            url = "https://s.altnet.rippletest.net:51234/";
         }
         xrplClient = new XrplClient(HttpUrl.get(url));
         faucetClient = FaucetClient.construct(HttpUrl.get("https://faucet.altnet.rippletest.net"));
     }
+
     public JsonRpcRequest jsonRpcRequest(Wallet wallet) throws JSONException, JsonRpcClientErrorException {
         SetRegularKey setRegularKey = SetRegularKey
                 .builder()
@@ -69,11 +71,12 @@ public class XrpClientService {
     }
 
     public void checkServer() {
+        ServerInfoResult result = null;
         try {
-            System.out.println();
-            xrplClient.serverInformation();
+            result = xrplClient.serverInformation();
+            log.info(result.toString());
         } catch (JsonRpcClientErrorException e) {
-            e.printStackTrace();
+            log.error(Arrays.toString(e.getStackTrace()));
         }
     }
 
@@ -99,7 +102,7 @@ public class XrpClientService {
                 Thread.sleep(1000 * 4);
             } catch (Exception ignore) {
             }
-        }else{
+        } else {
             log.error("Faucet is not active on live server");
         }
     }
@@ -107,8 +110,7 @@ public class XrpClientService {
     public String checkBalance(Address classicAddress) {
         AccountInfoRequestParams requestParams = getAccountInfoRequest(classicAddress);
         AccountInfoResult accountInfoResult = getAccountInfo(requestParams);
-        final UnsignedInteger sequence = accountInfoResult.accountData().sequence();
-        System.out.println("Balance : " + accountInfoResult.accountData().balance());
+        log.info("Balance : " + accountInfoResult.accountData().balance());
         return accountInfoResult.accountData().balance().toString();
     }
 
@@ -143,10 +145,10 @@ public class XrpClientService {
         return setRegularKey;
     }
 
-    public AccountTransactionsResult accountTransactionsResult(Address address){
+    public AccountTransactionsResult accountTransactionsResult(Address address) {
         try {
             return xrplClient.accountTransactions(address);
-        }catch (Exception e){
+        } catch (Exception e) {
             return null;
         }
     }
@@ -201,7 +203,7 @@ public class XrpClientService {
         while (!transactionValidated && !transactionExpired) {
             Thread.sleep(4 * 1000);
             final LedgerIndex latestValidatedLedgerIndex = xrplClient.ledger(
-                            LedgerRequestParams.builder().ledgerIndex(LedgerIndex.VALIDATED).build()
+                            LedgerRequestParams.builder().ledgerSpecifier(LedgerSpecifier.VALIDATED).build()
                     )
                     .ledgerIndex()
                     .orElseThrow(() -> new RuntimeException("Ledger response did not contain a LedgerIndex."));
