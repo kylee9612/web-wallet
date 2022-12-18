@@ -2,9 +2,14 @@ package com.xrp.controller;
 
 import com.google.common.primitives.UnsignedInteger;
 import com.xrp.service.SignService;
+import com.xrp.service.XrpWalletService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
+import org.xrpl.xrpl4j.client.JsonRpcClientErrorException;
+import org.xrpl.xrpl4j.client.XrplClient;
 import org.xrpl.xrpl4j.crypto.KeyMetadata;
 import org.xrpl.xrpl4j.crypto.PrivateKey;
 import org.xrpl.xrpl4j.crypto.signing.SignedTransaction;
@@ -14,6 +19,7 @@ import org.xrpl.xrpl4j.keypairs.KeyPair;
 import org.xrpl.xrpl4j.keypairs.KeyPairService;
 import org.xrpl.xrpl4j.model.transactions.Address;
 import org.xrpl.xrpl4j.model.transactions.Payment;
+import org.xrpl.xrpl4j.model.transactions.SetRegularKey;
 import org.xrpl.xrpl4j.model.transactions.XrpCurrencyAmount;
 import org.xrpl.xrpl4j.wallet.DefaultWalletFactory;
 import org.xrpl.xrpl4j.wallet.Wallet;
@@ -22,38 +28,44 @@ import org.xrpl.xrpl4j.wallet.WalletFactory;
 @Controller
 public class XRPWalletController {
 
-    @Value("${xrp.test}")
-    private boolean isTest;
+    private static final Logger log = LoggerFactory.getLogger(XRPWalletController.class);
+
     private final WalletFactory walletFactory = DefaultWalletFactory.getInstance();
 
     private final KeyPairService keyPairService = DefaultKeyPairService.getInstance();
 
     @Autowired
     private SignService signService;
+    @Autowired
+    private XrpWalletService xrpWalletService;
+    @Autowired
+    private XRPController xrpController;
 
-    public Wallet generateWallet(){
-        Wallet wallet = walletFactory.randomWallet(isTest).wallet();
+
+    public Wallet generateWallet() {
+        Wallet wallet = xrpWalletService.generateWallet();
         signService.signUsingSingleKeySignatureService(wallet);
+        try {
+            System.out.println(xrpController.getRegularKey(wallet));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return wallet;
     }
-    public KeyPair getKeyPair(String publicKey, String privateKey){
-        return KeyPair.builder().
-                publicKey(publicKey).
-                privateKey(privateKey).
-                build();
+
+    public KeyPair getKeyPair(String publicKey, String privateKey) {
+        return xrpWalletService.getKeyPair(publicKey,privateKey);
     }
 
-    public Wallet getWallet(String secretKey){
-        return walletFactory.fromSeed(secretKey ,isTest);
+    public Wallet getWallet(String secretKey) {
+        return xrpWalletService.getWallet(secretKey);
     }
+
     public Wallet getWallet(String publicKey, String privateKey) {
-        KeyPair key = getKeyPair(publicKey,privateKey);
-        return walletFactory.fromKeyPair(key, isTest);
+        return xrpWalletService.getWallet(publicKey,privateKey);
     }
+
     public void walletInfo(Wallet wallet) {
-        System.out.println("Public key : " + wallet.publicKey());
-        System.out.println("Private key : " + wallet.privateKey().get());
-        System.out.println("Classic Address : " + wallet.classicAddress());
-        System.out.println("xAddress : " + wallet.xAddress());
+        xrpWalletService.walletInfo(wallet);
     }
 }

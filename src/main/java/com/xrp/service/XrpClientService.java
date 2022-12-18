@@ -4,9 +4,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.primitives.UnsignedInteger;
 import com.google.common.primitives.UnsignedLong;
 import okhttp3.HttpUrl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.stereotype.Service;
 import org.xrpl.xrpl4j.client.JsonRpcClientErrorException;
+import org.xrpl.xrpl4j.client.JsonRpcRequest;
 import org.xrpl.xrpl4j.client.XrplClient;
 import org.xrpl.xrpl4j.client.faucet.FaucetClient;
 import org.xrpl.xrpl4j.client.faucet.FundAccountRequest;
@@ -17,6 +21,7 @@ import org.xrpl.xrpl4j.crypto.signing.SignedTransaction;
 import org.xrpl.xrpl4j.crypto.signing.SingleKeySignatureService;
 import org.xrpl.xrpl4j.model.client.accounts.AccountInfoRequestParams;
 import org.xrpl.xrpl4j.model.client.accounts.AccountInfoResult;
+import org.xrpl.xrpl4j.model.client.accounts.AccountTransactionsResult;
 import org.xrpl.xrpl4j.model.client.common.LedgerIndex;
 import org.xrpl.xrpl4j.model.client.common.LedgerSpecifier;
 import org.xrpl.xrpl4j.model.client.fees.FeeResult;
@@ -25,10 +30,7 @@ import org.xrpl.xrpl4j.model.client.transactions.SubmitResult;
 import org.xrpl.xrpl4j.model.client.transactions.TransactionRequestParams;
 import org.xrpl.xrpl4j.model.client.transactions.TransactionResult;
 import org.xrpl.xrpl4j.model.immutables.FluentCompareTo;
-import org.xrpl.xrpl4j.model.transactions.Address;
-import org.xrpl.xrpl4j.model.transactions.Payment;
-import org.xrpl.xrpl4j.model.transactions.Transaction;
-import org.xrpl.xrpl4j.model.transactions.XrpCurrencyAmount;
+import org.xrpl.xrpl4j.model.transactions.*;
 import org.xrpl.xrpl4j.wallet.Wallet;
 
 import java.math.BigDecimal;
@@ -37,18 +39,33 @@ import java.util.Map;
 
 @Service
 public class XrpClientService {
+    private static final Logger log = LoggerFactory.getLogger(XrpClientService.class);
+
     @Value("${xrp.url}")
-    private static String url;
+    private String url;
+    @Value("${xrp.test}")
+    private boolean isTest;
+
     private final XrplClient xrplClient;
-    private final FaucetClient faucetClient = FaucetClient.construct(HttpUrl.get("https://faucet.altnet.rippletest.net"));
+    private final FaucetClient faucetClient;
 
     public XrpClientService() {
         System.out.println(url);
         if (url == null) {
-            url = "http://localhost:51234/";
+            url = "http://15.165.156.20:51234/";
 
         }
         xrplClient = new XrplClient(HttpUrl.get(url));
+        faucetClient = FaucetClient.construct(HttpUrl.get("https://faucet.altnet.rippletest.net"));
+    }
+    public JsonRpcRequest jsonRpcRequest(Wallet wallet) throws JSONException, JsonRpcClientErrorException {
+        SetRegularKey setRegularKey = SetRegularKey
+                .builder()
+                .signingPublicKey(wallet.publicKey())
+                .account(wallet.classicAddress())
+                .fee(xrplClient.fee().drops().baseFee())
+                .build();
+        return null;
     }
 
     public void checkServer() {
@@ -59,6 +76,7 @@ public class XrpClientService {
             e.printStackTrace();
         }
     }
+
 
     public Map<String, Object> getInfo() {
         try {
@@ -74,19 +92,24 @@ public class XrpClientService {
     }
 
     public void fundFaucet(Address classicAddress) {
-        faucetClient.fundAccount(FundAccountRequest.of(classicAddress));
-        System.out.println("Funded the account using the Testnet faucet.");
-        try {
-            Thread.sleep(1000 * 4);
-        } catch (Exception ignore) {
+        if (isTest) {
+            faucetClient.fundAccount(FundAccountRequest.of(classicAddress));
+            System.out.println("Funded the account using the Testnet faucet.");
+            try {
+                Thread.sleep(1000 * 4);
+            } catch (Exception ignore) {
+            }
+        }else{
+            log.error("Faucet is not active on live server");
         }
     }
 
-    public void checkBalance(Address classicAddress) {
+    public String checkBalance(Address classicAddress) {
         AccountInfoRequestParams requestParams = getAccountInfoRequest(classicAddress);
         AccountInfoResult accountInfoResult = getAccountInfo(requestParams);
         final UnsignedInteger sequence = accountInfoResult.accountData().sequence();
         System.out.println("Balance : " + accountInfoResult.accountData().balance());
+        return accountInfoResult.accountData().balance().toString();
     }
 
     public AccountInfoResult getAccountInfo(AccountInfoRequestParams resultParams) {
@@ -103,6 +126,29 @@ public class XrpClientService {
                 .builder().ledgerIndex(LedgerIndex.VALIDATED)
                 .account(classicAddress)
                 .build();
+    }
+
+    public SetRegularKey getRegularKey(Wallet wallet) {
+        SetRegularKey setRegularKey = null;
+        try {
+            setRegularKey = SetRegularKey
+                    .builder()
+                    .signingPublicKey(wallet.publicKey())
+                    .account(wallet.classicAddress())
+                    .fee(xrplClient.fee().drops().baseFee())
+                    .build();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return setRegularKey;
+    }
+
+    public AccountTransactionsResult accountTransactionsResult(Address address){
+        try {
+            return xrplClient.accountTransactions(address);
+        }catch (Exception e){
+            return null;
+        }
     }
 
     public void sendXRP(Wallet testWallet, String addressTo) throws JsonRpcClientErrorException, JsonProcessingException, InterruptedException {

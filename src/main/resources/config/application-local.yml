@@ -6,5 +6,5 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
 
 xrp:
-  url: https://s2.ripple.com:51234/
-  test: false
+  url: http://15.165.156.20:51234/
+  test: true

@@ -25,7 +25,6 @@ public class SignService {
         Payment payment = constructPayment(wallet.classicAddress(), signatureService.getPublicKey(KeyMetadata.EMPTY));
         SignedTransaction<Payment> signedPayment = signatureService.sign(KeyMetadata.EMPTY, payment);
         System.out.println("Signed Payment: " + signedPayment.signedTransaction());
-
     }
 
     public void signUsingDerivedKeysSignatureService() {
