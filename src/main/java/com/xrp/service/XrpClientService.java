@@ -3,6 +3,7 @@ package com.xrp.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.primitives.UnsignedInteger;
 import com.google.common.primitives.UnsignedLong;
+import com.xrp.util.XrpRequestParamUtil;
 import okhttp3.HttpUrl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +20,7 @@ import org.xrpl.xrpl4j.crypto.PrivateKey;
 import org.xrpl.xrpl4j.crypto.signing.SignatureService;
 import org.xrpl.xrpl4j.crypto.signing.SignedTransaction;
 import org.xrpl.xrpl4j.crypto.signing.SingleKeySignatureService;
+import org.xrpl.xrpl4j.model.client.XrplRequestParams;
 import org.xrpl.xrpl4j.model.client.accounts.AccountInfoRequestParams;
 import org.xrpl.xrpl4j.model.client.accounts.AccountInfoResult;
 import org.xrpl.xrpl4j.model.client.accounts.AccountTransactionsResult;
@@ -50,6 +52,7 @@ public class XrpClientService {
 
     private final XrplClient xrplClient;
     private final FaucetClient faucetClient;
+    private final XrpRequestParamUtil paramUtil;
 
     public XrpClientService() {
         System.out.println(url);
@@ -58,16 +61,7 @@ public class XrpClientService {
         }
         xrplClient = new XrplClient(HttpUrl.get(url));
         faucetClient = FaucetClient.construct(HttpUrl.get("https://faucet.altnet.rippletest.net"));
-    }
-
-    public JsonRpcRequest jsonRpcRequest(Wallet wallet) throws JSONException, JsonRpcClientErrorException {
-        SetRegularKey setRegularKey = SetRegularKey
-                .builder()
-                .signingPublicKey(wallet.publicKey())
-                .account(wallet.classicAddress())
-                .fee(xrplClient.fee().drops().baseFee())
-                .build();
-        return null;
+        paramUtil = new XrpRequestParamUtil();
     }
 
     public void checkServer() {
@@ -108,7 +102,7 @@ public class XrpClientService {
     }
 
     public String checkBalance(Address classicAddress) {
-        AccountInfoRequestParams requestParams = getAccountInfoRequest(classicAddress);
+        AccountInfoRequestParams requestParams = paramUtil.getAccountInfoRequest(classicAddress);
         AccountInfoResult accountInfoResult = getAccountInfo(requestParams);
         log.info("Balance : " + accountInfoResult.accountData().balance());
         return accountInfoResult.accountData().balance().toString();
@@ -122,12 +116,12 @@ public class XrpClientService {
             return null;
         }
     }
-
-    private AccountInfoRequestParams getAccountInfoRequest(Address classicAddress) {
-        return AccountInfoRequestParams
-                .builder().ledgerIndex(LedgerIndex.VALIDATED)
-                .account(classicAddress)
-                .build();
+    public AccountTransactionsResult accountTransactionsResult(Address address) {
+        try {
+            return xrplClient.accountTransactions(address);
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     public SetRegularKey getRegularKey(Wallet wallet) {
@@ -145,18 +139,10 @@ public class XrpClientService {
         return setRegularKey;
     }
 
-    public AccountTransactionsResult accountTransactionsResult(Address address) {
-        try {
-            return xrplClient.accountTransactions(address);
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
     public void sendXRP(Wallet testWallet, String addressTo) throws JsonRpcClientErrorException, JsonProcessingException, InterruptedException {
         Address classicAddress = testWallet.classicAddress();
 
-        AccountInfoRequestParams requestParams = getAccountInfoRequest(classicAddress);
+        AccountInfoRequestParams requestParams = paramUtil.getAccountInfoRequest(classicAddress);
         AccountInfoResult accountInfoResult = getAccountInfo(requestParams);
         final UnsignedInteger sequence = accountInfoResult.accountData().sequence();
 

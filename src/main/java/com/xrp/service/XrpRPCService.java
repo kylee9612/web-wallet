@@ -8,6 +8,7 @@ import org.xrpl.xrpl4j.client.JsonRpcClient;
 import org.xrpl.xrpl4j.client.JsonRpcClientErrorException;
 import org.xrpl.xrpl4j.client.JsonRpcRequest;
 import org.xrpl.xrpl4j.client.XrplClient;
+import org.xrpl.xrpl4j.model.client.XrplRequestParams;
 import org.xrpl.xrpl4j.model.transactions.SetRegularKey;
 import org.xrpl.xrpl4j.wallet.Wallet;
 
@@ -28,14 +29,8 @@ public class XrpRPCService {
         }
     }
 
-    public JsonRpcRequest jsonRpcRequest(Wallet wallet) throws JSONException, JsonRpcClientErrorException {
+    public JsonRpcRequest jsonRpcRequest(XrplRequestParams params) throws JSONException, JsonRpcClientErrorException {
         init();
-        SetRegularKey setRegularKey = SetRegularKey
-                .builder()
-                .signingPublicKey(wallet.publicKey())
-                .account(wallet.classicAddress())
-                .fee(xrplClient.fee().drops().baseFee())
-                .build();
         return null;
     }
 }
