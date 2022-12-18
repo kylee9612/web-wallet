@@ -45,10 +45,11 @@ dependencies {
 	implementation 'org.xrpl:xrpl4j-crypto-bouncycastle:2.5.1'
 	// https://mvnrepository.com/artifact/org.immutables/value
 	compileOnly group: 'org.immutables', name: 'value', version: '2.9.2'
-
-
 	// https://mvnrepository.com/artifact/com.mysql/mysql-connector-j
 	implementation 'com.mysql:mysql-connector-j:8.0.31'
+	// https://mvnrepository.com/artifact/com.googlecode.json-simple/json-simple
+	implementation 'com.googlecode.json-simple:json-simple:1.1.1'
+
 }
 
 tasks.named('test') {
@@ -58,4 +59,9 @@ tasks.named('test') {
 tasks.named('bootBuildImage') {
 	builder = 'paketobuildpacks/builder:tiny'
 	environment = ['BP_NATIVE_IMAGE': 'true']
+}
+
+bootRun {
+	String activeProfile = System.properties['spring.profiles.active']
+	systemProperty "spring.profiles.active", activeProfile
 }
