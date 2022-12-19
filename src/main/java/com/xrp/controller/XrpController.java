@@ -18,20 +18,17 @@ import org.xrpl.xrpl4j.wallet.Wallet;
 import java.util.Map;
 
 @Controller
-public class XRPController extends Thread {
+public class XrpController extends Thread {
 
-    private static final Logger log = LoggerFactory.getLogger(XRPController.class);
-
-    @Value("${xrp.test}")
-    private boolean isTest;
+    private static final Logger log = LoggerFactory.getLogger(XrpController.class);
 
     @Autowired
     private XrpClientService xrpClientService;
     @Autowired
     private XrpWalletService xrpWalletService;
 
-    public void checkServer() {
-        xrpClientService.checkServer();
+    public String checkServer() {
+        return xrpClientService.checkServer();
     }
 
     public Map<String, Object> getInfo(){

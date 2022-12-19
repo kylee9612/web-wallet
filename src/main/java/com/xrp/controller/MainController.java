@@ -1,6 +1,7 @@
 package com.xrp.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.xrpl.xrpl4j.client.JsonRpcClientErrorException;
@@ -12,10 +13,10 @@ import org.xrpl.xrpl4j.wallet.Wallet;
 public class MainController {
 
     @Autowired
-    private XRPController xrpController;
+    private XrpController xrpController;
 
     @Autowired
-    private XRPWalletController xrpWalletController;
+    private XrpWalletController xrpWalletController;
 
     @GetMapping("/generate")
     public String newWallet() {
@@ -36,14 +37,14 @@ public class MainController {
         return xrpController.checkBalance(address1);
     }
 
-    @GetMapping("/test")
-    public String test() {
-        return "test";
+    @GetMapping("/serverInfo")
+    public String serverInfo(){
+        return xrpController.getInfo().toString();
     }
 
-    @GetMapping("/serverInfo")
-    public String serverInfo() throws JsonRpcClientErrorException {
-        return xrpController.getInfo().toString();
+    @GetMapping("/checkServer")
+    public String checkServer(){
+        return xrpController.checkServer();
     }
 
     @GetMapping("/fundFaucet")
@@ -57,5 +58,13 @@ public class MainController {
     public String getBalance(@RequestParam("address") String address) {
         Address address1 = Address.builder().value(address).build();
         return xrpController.checkBalance(address1);
+    }
+
+    @GetMapping("/send")
+    public String send(@RequestParam("address")String address) throws JsonRpcClientErrorException, JsonProcessingException, InterruptedException {
+        Wallet wallet = xrpWalletController.generateWallet();
+        xrpController.fundFaucet(wallet.classicAddress());
+        xrpController.sendXRP(wallet,address);
+        return xrpController.checkBalance(wallet.classicAddress());
     }
 }

@@ -50,27 +50,30 @@ public class XrpClientService {
     @Value("${xrp.test}")
     private boolean isTest;
 
-    private final XrplClient xrplClient;
-    private final FaucetClient faucetClient;
-    private final XrpRequestParamUtil paramUtil;
+    private XrplClient xrplClient;
+    private FaucetClient faucetClient;
+    private XrpRequestParamUtil paramUtil;
 
     public XrpClientService() {
         System.out.println(url);
         if (url == null) {
-            url = "https://s.altnet.rippletest.net:51234/";
+//            url = "https://s.altnet.rippletest.net:51234/";
+            url = "http://localhost:51234/";
         }
         xrplClient = new XrplClient(HttpUrl.get(url));
         faucetClient = FaucetClient.construct(HttpUrl.get("https://faucet.altnet.rippletest.net"));
         paramUtil = new XrpRequestParamUtil();
     }
 
-    public void checkServer() {
+    public String checkServer() {
         ServerInfoResult result = null;
         try {
             result = xrplClient.serverInformation();
             log.info(result.toString());
+            return result.toString();
         } catch (JsonRpcClientErrorException e) {
-            log.error(Arrays.toString(e.getStackTrace()));
+            log.error(e.getMessage());
+            return null;
         }
     }
 
@@ -81,9 +84,10 @@ public class XrpClientService {
             map.put("Server Info", xrplClient.serverInformation());
             map.put("Node Fee", xrplClient.fee());
             map.put("JsonRpcClient", xrplClient.getJsonRpcClient());
+            log.info(map+"");
             return map;
         } catch (JsonRpcClientErrorException e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
         }
         return null;
     }
@@ -94,7 +98,8 @@ public class XrpClientService {
             System.out.println("Funded the account using the Testnet faucet.");
             try {
                 Thread.sleep(1000 * 4);
-            } catch (Exception ignore) {
+            } catch (Exception e) {
+                log.error(e.getMessage());
             }
         } else {
             log.error("Faucet is not active on live server");
@@ -110,16 +115,21 @@ public class XrpClientService {
 
     public AccountInfoResult getAccountInfo(AccountInfoRequestParams resultParams) {
         try {
-            return xrplClient.accountInfo(resultParams);
+            AccountInfoResult result = xrplClient.accountInfo(resultParams);
+            log.info(result.toString());
+            return result;
         } catch (JsonRpcClientErrorException e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
             return null;
         }
     }
     public AccountTransactionsResult accountTransactionsResult(Address address) {
         try {
-            return xrplClient.accountTransactions(address);
+            AccountTransactionsResult result = xrplClient.accountTransactions(address);
+            log.info(result.toString());
+            return result;
         } catch (Exception e) {
+            log.error(e.getMessage());
             return null;
         }
     }
@@ -133,8 +143,9 @@ public class XrpClientService {
                     .account(wallet.classicAddress())
                     .fee(xrplClient.fee().drops().baseFee())
                     .build();
+            log.info(setRegularKey.toString());
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
         }
         return setRegularKey;
     }
@@ -167,7 +178,7 @@ public class XrpClientService {
                 .signingPublicKey(testWallet.publicKey())
                 .lastLedgerSequence(lastLedgerSequence)
                 .build();
-        System.out.println("Constructed Payment: " + payment);
+        log.info("Constructed Payment: " + payment);
 
         // Construct a SignatureService to sign the Payment
         PrivateKey privateKey = PrivateKey.fromBase16EncodedPrivateKey(testWallet.privateKey().get());

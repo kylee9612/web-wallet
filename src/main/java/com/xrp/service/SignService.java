@@ -1,6 +1,8 @@
 package com.xrp.service;
 
 import com.google.common.primitives.UnsignedInteger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.xrpl.xrpl4j.codec.addresses.VersionType;
 import org.xrpl.xrpl4j.crypto.KeyMetadata;
@@ -18,13 +20,15 @@ import org.xrpl.xrpl4j.wallet.Wallet;
 
 @Service
 public class SignService {
-    public void signUsingSingleKeySignatureService(Wallet wallet) {
+    private static final Logger log = LoggerFactory.getLogger(SignService.class);
+    public SignedTransaction<Payment> signUsingSingleKeySignatureService(Wallet wallet) {
         PrivateKey privateKey = PrivateKey.fromBase16EncodedPrivateKey(wallet.privateKey().get());
         SingleKeySignatureService signatureService = new SingleKeySignatureService(privateKey);
 
         Payment payment = constructPayment(wallet.classicAddress(), signatureService.getPublicKey(KeyMetadata.EMPTY));
         SignedTransaction<Payment> signedPayment = signatureService.sign(KeyMetadata.EMPTY, payment);
-        System.out.println("Signed Payment: " + signedPayment.signedTransaction());
+        log.info("Signed Payment: " + signedPayment.signedTransaction());
+        return signedPayment;
     }
 
     public void signUsingDerivedKeysSignatureService() {
@@ -40,14 +44,13 @@ public class SignService {
                 .keyPassword("password")
                 .build();
 
-
         final PublicKey publicKey = signatureService.getPublicKey(keyMetadata);
         final Address classicAddress = keyPairService.deriveAddress(publicKey.value());
 
         final Payment payment = constructPayment(classicAddress, publicKey);
 
         final SignedTransaction<Payment> signedPayment = signatureService.sign(keyMetadata, payment);
-        System.out.println("Signed Payment: " + signedPayment.signedTransaction());
+        log.info("Signed Payment: " + signedPayment.signedTransaction());
     }
     private Payment constructPayment(Address address, PublicKey publicKey) {
         return Payment.builder()

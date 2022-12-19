@@ -1,6 +1,5 @@
 package com.xrp.task;
 
-import com.xrp.common.DicKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,7 +12,7 @@ import java.util.Map;
  * @author ohs
  * @version 1.0
  */
-public abstract class AbstractDemonTask extends Thread implements DicKey {
+public abstract class AbstractDemonTask extends Thread{
     //	protected Log log = LogFactory.getLog(AbstractDemonTask.class);
     private static Logger log = LoggerFactory.getLogger(AbstractDemonTask.class);
 
@@ -33,22 +32,6 @@ public abstract class AbstractDemonTask extends Thread implements DicKey {
     protected abstract void closeDBNode();
 
     public void startThread() throws Exception {
-
-        // 0. 코인 정보 가져오기 (USE_FLAG = 'Y') : 'N'이면 작동을 하지 않도록 한다.
-        Map<String, Object> paramMap = new HashMap<String, Object>();
-        paramMap.put(DB_coin_type, coinType);
-
-        if (coinMap == null) {
-            throw new Exception();
-        }
-        if ("Y".equals(coinMap.get("USE_FLAG"))) {
-            startProcess();
-        } else {
-            stopProcess();
-        }
-
-        isRunning = true;
-        start();
     }
 
     public boolean getProcessStatus() {
