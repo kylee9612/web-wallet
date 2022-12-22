@@ -6,6 +6,7 @@ import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.xrpl.xrpl4j.client.JsonRpcClientErrorException;
+import org.xrpl.xrpl4j.model.client.accounts.AccountInfoResult;
 import org.xrpl.xrpl4j.model.client.fees.FeeResult;
 import org.xrpl.xrpl4j.model.jackson.ObjectMapperFactory;
 import org.xrpl.xrpl4j.model.transactions.Address;
@@ -36,9 +37,10 @@ public class MainController {
         String publicKey = request.get("publicKey").toString();
         String privateKey = request.get("privateKey").toString();
         Wallet wallet = xrpWalletController.getWallet(publicKey,privateKey);
-        JSONObject object = xrpWalletController.getWalletInfo(wallet);
+        JSONObject object = xrpWalletController.getWalletInfoWithBalance(wallet);
         FeeResult fee = xrpController.getFee();
         object.put("fee",fee.drops().baseFee());
+        System.out.println(object);
         return object;
     }
 
@@ -82,6 +84,17 @@ public class MainController {
         xrpController.sendXRP(wallet,toAddress,amount);
         JSONObject object = xrpWalletController.getWalletInfo(wallet);
         object.put("to_balance",xrpController.checkBalance(Address.of(toAddress)));
+        return object;
+    }
+
+    @GetMapping("/accountInfo")
+    public JSONObject accountInfo(@RequestParam String address) throws JsonRpcClientErrorException {
+        AccountInfoResult result = xrpController.getAccountInfo(xrpController.getAccountInfoRequest(Address.of(address)));
+        JSONObject object = new JSONObject();
+        object.put("Transaction ID",result.accountData().accountTransactionId());
+        object.put("Account",result.accountData().account());
+        object.put("Regular Key",result.accountData().regularKey());
+        object.put("Ledger Index",result.ledgerIndex().get());
         return object;
     }
 }

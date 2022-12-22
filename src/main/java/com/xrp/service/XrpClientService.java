@@ -5,6 +5,7 @@ import com.google.common.primitives.UnsignedInteger;
 import com.google.common.primitives.UnsignedLong;
 import com.xrp.util.XrpRequestParamUtil;
 import okhttp3.HttpUrl;
+import org.bouncycastle.crypto.util.PublicKeyFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,6 +18,7 @@ import org.xrpl.xrpl4j.client.faucet.FaucetClient;
 import org.xrpl.xrpl4j.client.faucet.FundAccountRequest;
 import org.xrpl.xrpl4j.crypto.KeyMetadata;
 import org.xrpl.xrpl4j.crypto.PrivateKey;
+import org.xrpl.xrpl4j.crypto.PublicKey;
 import org.xrpl.xrpl4j.crypto.signing.SignatureService;
 import org.xrpl.xrpl4j.crypto.signing.SignedTransaction;
 import org.xrpl.xrpl4j.crypto.signing.SingleKeySignatureService;
@@ -96,12 +98,12 @@ public class XrpClientService {
             faucetClient.fundAccount(FundAccountRequest.of(classicAddress));
             System.out.println("Funded the account using the Testnet faucet.");
             try {
-                Thread.sleep(1000 * 6);
+                Thread.sleep(1000 * 4);
             } catch (Exception e) {
                 log.error(e.getMessage());
             }
         } else {
-            log.error("Faucet is not active on live server");
+            log.error("Faucet is not valid on live server");
         }
     }
 

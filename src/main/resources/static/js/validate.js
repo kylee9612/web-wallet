@@ -1,7 +1,3 @@
-$("input[name=net]").checked(()=>{
-
-})
-
 function generate() {
     $.ajax({
         type: "GET",
@@ -11,7 +7,6 @@ function generate() {
             $("#from_private").val(data.privateKey);
             $("#from_address").val(data.classicAddress);
             $("#from_xAddress").val(data.xAddress);
-            $("#from_balance").val(data.balance);
         },
         error: function (error) {
             console.log(error)
@@ -21,39 +16,37 @@ function generate() {
     })
 }
 
-function from_valid(bool) {
+function from_valid() {
     let publicKey = $("#from_public").val();
     let privateKey = $("#from_private").val();
     let classicAddress = $("#from_address").val();
     let xAddress = $("#from_xAddress").val();
     let type = ""
     let url = ""
-    if (publicKey === "" || privateKey === "") {
+    if (publicKey === "") {
         type = "GET"
         if (classicAddress === null)
             url = "http://localhost:8090/api/v2/xrp/balance?address=" + xAddress
-        else if(xAddress !== null)
+        else if (xAddress !== null)
             url = "http://localhost:8090/api/v2/xrp/balance?address=" + classicAddress
         $.ajax({
             type: type,
             url: url,
-            async : bool,
-            beforeSend:function (){
+            beforeSend: function () {
                 $("#from_balance").val("");
                 $("#from_valid").val("");
             },
             success: function (data) {
-                $("#from_public").val("");
-                $("#from_private").val("");
                 $("#from_balance").val(data);
                 $("#from_valid").val("valid");
             },
             error: function (error) {
                 alert("Not Valid Address")
+                $("#from_balance").val("");
                 $("#from_valid").val("false")
             }
         })
-    } else if(classicAddress !== null){
+    } else if (classicAddress !== null) {
         let data = {
             "publicKey": publicKey,
             "privateKey": privateKey
@@ -65,11 +58,10 @@ function from_valid(bool) {
         $.ajax({
             type: type,
             url: url,
-            async : bool,
             contentType: "application/json",
             dataType: "JSON",
             data: JSON.stringify(data),
-            beforeSend:function (){
+            beforeSend: function () {
                 $("#from_balance").val("");
                 $("#from_valid").val("");
             },
@@ -79,7 +71,7 @@ function from_valid(bool) {
                 $("#from_xAddress").val(data.xAddress);
                 $("#from_balance").val(data.balance);
                 $("#from_valid").val("valid");
-                $("#fee").val("0.0000"+data.fee.value)
+                $("#fee").val("0.0000" + data.fee.value)
             },
             error: function (error) {
                 console.log("Not Valid Keys")
@@ -89,11 +81,12 @@ function from_valid(bool) {
                 $("#from_valid").val("false")
             }
         })
-    }else{
-        alert("No Keys or Address Entered")
+    } else {
+        alert("Public Key or Classic Address Entered")
     }
 }
-function to_valid(bool) {
+
+function to_valid() {
     let classicAddress = $("#to_address").val();
     let xAddress = $("#to_xAddress").val();
     let type = ""
@@ -106,8 +99,7 @@ function to_valid(bool) {
     $.ajax({
         type: type,
         url: url,
-        async : bool,
-        beforeSend:function (){
+        beforeSend: function () {
             $("#to_balance").val("");
             $("#to_valid").val("");
         },
@@ -122,17 +114,22 @@ function to_valid(bool) {
     })
 }
 
-function send(){
-    from_valid(false)
-    to_valid(false)
+function send() {
     let from_ = $("#from_valid").val()
     let to_ = $("#to_valid").val()
-    if(from_ === "valid" && to_ === "valid"){
+    let amount = $("#amount").val()
+    if (from_ !== "valid") {
+        alert("Make From Account Valid First")
+    } else if (to_ !== "valid") {
+        alert("Make To Account Valid First")
+    } else if (amount === "" || amount === null) {
+        alert("Type the amount how much you want to Send")
+    } else {
         let data = {
-            "publicKey" : $("#from_public").val(),
-            "privateKey" : $("#from_private").val(),
-            "address" : $("#to_address").val(),
-            "amount" : $("#amount").val()
+            "publicKey": $("#from_public").val(),
+            "privateKey": $("#from_private").val(),
+            "address": $("#to_address").val(),
+            "amount": $("#amount").val()
         }
         $.ajax({
             type: "POST",
@@ -140,7 +137,7 @@ function send(){
             contentType: "application/json",
             dataType: "JSON",
             data: JSON.stringify(data),
-            beforeSend:function (){
+            beforeSend: function () {
                 $("#from_balance").val("")
                 $("#from_valid").val("")
             },
@@ -155,8 +152,6 @@ function send(){
                 console.log("Not Valid Keys")
             }
         })
-    }else{
-        alert("Address Not Valid")
     }
 }
 
