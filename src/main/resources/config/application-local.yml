@@ -4,8 +4,19 @@ spring:
     username: root
     password: root
     driver-class-name: com.mysql.cj.jdbc.Driver
+  mvc:
+    view:
+      suffix: .jsp
+      prefix: /WEB-INF/jsp/
+  devtools:
+    livereload:
+       enabled: true
+    restart:
+      enabled: true
+  thymeleaf:
+    cache: false
 
 xrp:
   url: http://localhost:51234/
-#  url : https://s.altnet.rippletest.net:51234/
   test: true
+#  url : https://s.altnet.rippletest.net:51234/

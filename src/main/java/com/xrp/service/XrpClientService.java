@@ -57,7 +57,6 @@ public class XrpClientService {
     public XrpClientService() {
         System.out.println(url);
         if (url == null) {
-//            url = "https://s.altnet.rippletest.net:51234/";
             url = "http://localhost:51234/";
         }
         xrplClient = new XrplClient(HttpUrl.get(url));
@@ -84,7 +83,7 @@ public class XrpClientService {
             map.put("Server Info", xrplClient.serverInformation());
             map.put("Node Fee", xrplClient.fee());
             map.put("JsonRpcClient", xrplClient.getJsonRpcClient());
-            log.info(map+"");
+            log.info(map + "");
             return map;
         } catch (JsonRpcClientErrorException e) {
             log.error(e.getMessage());
@@ -97,7 +96,7 @@ public class XrpClientService {
             faucetClient.fundAccount(FundAccountRequest.of(classicAddress));
             System.out.println("Funded the account using the Testnet faucet.");
             try {
-                Thread.sleep(1000 * 4);
+                Thread.sleep(1000 * 6);
             } catch (Exception e) {
                 log.error(e.getMessage());
             }
@@ -106,23 +105,20 @@ public class XrpClientService {
         }
     }
 
-    public String checkBalance(Address classicAddress) {
+    public String checkBalance(Address classicAddress) throws JsonRpcClientErrorException {
         AccountInfoRequestParams requestParams = paramUtil.getAccountInfoRequest(classicAddress);
         AccountInfoResult accountInfoResult = getAccountInfo(requestParams);
-        log.info("Balance : " + accountInfoResult.accountData().balance());
-        return accountInfoResult.accountData().balance().toString();
+        XrpCurrencyAmount balance = accountInfoResult.accountData().balance();
+        log.info("Balance : " + balance.toXrp());
+        return accountInfoResult.accountData().balance().toXrp().toString();
     }
 
-    public AccountInfoResult getAccountInfo(AccountInfoRequestParams resultParams) {
-        try {
-            AccountInfoResult result = xrplClient.accountInfo(resultParams);
-            log.info(result.toString());
-            return result;
-        } catch (JsonRpcClientErrorException e) {
-            log.error(e.getMessage());
-            return null;
-        }
+    public AccountInfoResult getAccountInfo(AccountInfoRequestParams resultParams) throws JsonRpcClientErrorException {
+        AccountInfoResult result = xrplClient.accountInfo(resultParams);
+        log.info(result.toString());
+        return result;
     }
+
     public AccountTransactionsResult accountTransactionsResult(Address address) {
         try {
             AccountTransactionsResult result = xrplClient.accountTransactions(address);
@@ -150,7 +146,11 @@ public class XrpClientService {
         return setRegularKey;
     }
 
-    public void sendXRP(Wallet testWallet, String addressTo) throws JsonRpcClientErrorException, JsonProcessingException, InterruptedException {
+    public FeeResult getFee() throws JsonRpcClientErrorException {
+        return xrplClient.fee();
+    }
+
+    public void sendXRP(Wallet testWallet, String addressTo,BigDecimal bigAmount) throws JsonRpcClientErrorException, JsonProcessingException, InterruptedException {
         Address classicAddress = testWallet.classicAddress();
 
         AccountInfoRequestParams requestParams = paramUtil.getAccountInfoRequest(classicAddress);
@@ -171,7 +171,7 @@ public class XrpClientService {
 
         Payment payment = Payment.builder()
                 .account(classicAddress)
-                .amount(XrpCurrencyAmount.ofXrp(BigDecimal.valueOf(30000000)))
+                .amount(XrpCurrencyAmount.ofXrp(bigAmount))
                 .destination(Address.of(addressTo))
                 .sequence(sequence)
                 .fee(openLedgerFee)

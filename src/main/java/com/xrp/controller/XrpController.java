@@ -12,9 +12,11 @@ import org.xrpl.xrpl4j.client.JsonRpcClientErrorException;
 import org.xrpl.xrpl4j.model.client.accounts.AccountInfoRequestParams;
 import org.xrpl.xrpl4j.model.client.accounts.AccountInfoResult;
 import org.xrpl.xrpl4j.model.client.accounts.AccountTransactionsResult;
+import org.xrpl.xrpl4j.model.client.fees.FeeResult;
 import org.xrpl.xrpl4j.model.transactions.*;
 import org.xrpl.xrpl4j.wallet.Wallet;
 
+import java.math.BigDecimal;
 import java.util.Map;
 
 @Controller
@@ -43,7 +45,7 @@ public class XrpController extends Thread {
         return xrpClientService.accountTransactionsResult(address);
     }
 
-    public String checkBalance(Address classicAddress) {
+    public String checkBalance(Address classicAddress) throws JsonRpcClientErrorException {
         return xrpClientService.checkBalance(classicAddress);
     }
 
@@ -51,11 +53,15 @@ public class XrpController extends Thread {
         return xrpClientService.getRegularKey(wallet);
     }
 
-    public void sendXRP(Wallet testWallet, String addressTo) throws JsonRpcClientErrorException, JsonProcessingException, InterruptedException {
-        xrpClientService.sendXRP(testWallet,addressTo);
+    public void sendXRP(Wallet testWallet, String addressTo, BigDecimal amount) throws JsonRpcClientErrorException, JsonProcessingException, InterruptedException {
+        xrpClientService.sendXRP(testWallet,addressTo,amount);
     }
 
-    public AccountInfoResult getAccountInfo(AccountInfoRequestParams resultParams) {
+    public FeeResult getFee() throws JsonRpcClientErrorException {
+        return xrpClientService.getFee();
+    }
+
+    public AccountInfoResult getAccountInfo(AccountInfoRequestParams resultParams) throws JsonRpcClientErrorException {
         return xrpClientService.getAccountInfo(resultParams);
     }
 

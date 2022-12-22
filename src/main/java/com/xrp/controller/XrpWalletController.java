@@ -3,10 +3,13 @@ package com.xrp.controller;
 import com.xrp.service.SignService;
 import com.xrp.service.XrpRPCService;
 import com.xrp.service.XrpWalletService;
+import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
+import org.xrpl.xrpl4j.client.JsonRpcClientErrorException;
 import org.xrpl.xrpl4j.crypto.signing.SignedTransaction;
 import org.xrpl.xrpl4j.keypairs.KeyPair;
 import org.xrpl.xrpl4j.model.client.XrplMethods;
@@ -30,26 +33,16 @@ public class XrpWalletController {
     @Autowired
     private XrpRPCService xrpRPCService;
 
+    @Value("${xrp.test}")
+    private boolean isTest;
+
 
     public Wallet generateWallet() {
         Wallet wallet = xrpWalletService.generateWallet();
-        System.out.println(wallet);
-        SignedTransaction<Payment> signedTransaction = signService.signUsingSingleKeySignatureService(wallet);
-        try {
-            AccountInfoRequestParams infoRequestParams = xrpController.getAccountInfoRequest(wallet.classicAddress());
-            AccountInfoResult result = (AccountInfoResult) xrpRPCService.jsonRpcRequest(XrplMethods.SUBMIT,infoRequestParams);
-            SetRegularKey regularKey = xrpController.getRegularKey(wallet);
-            log.info("Param : "+infoRequestParams);
-            log.info("Result : "+result);
-            log.info("RegularKey : "+regularKey);
-        } catch (Exception e) {
-            log.error(e.getMessage());
+        if(isTest) {
+            xrpController.fundFaucet(wallet.classicAddress());
         }
         return wallet;
-    }
-
-    public KeyPair getKeyPair(String publicKey, String privateKey) {
-        return xrpWalletService.getKeyPair(publicKey,privateKey);
     }
 
     public Wallet getWallet(String secretKey) {
@@ -60,7 +53,19 @@ public class XrpWalletController {
         return xrpWalletService.getWallet(publicKey,privateKey);
     }
 
-    public void walletInfo(Wallet wallet) {
-        xrpWalletService.walletInfo(wallet);
+    public JSONObject getWalletInfoWithBalance(Wallet wallet) throws JsonRpcClientErrorException {
+        JSONObject object = getWalletInfo(wallet);
+        String balance = xrpController.checkBalance(wallet.classicAddress());
+        object.put("balance",balance);
+        return object;
+    }
+
+    public JSONObject getWalletInfo(Wallet wallet){
+        JSONObject object = new JSONObject();
+        object.put("publicKey",wallet.publicKey().toString());
+        object.put("privateKey",wallet.privateKey().get().toString());
+        object.put("classicAddress",wallet.classicAddress().toString());
+        object.put("xAddress",wallet.xAddress().toString());
+        return object;
     }
 }

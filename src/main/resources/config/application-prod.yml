@@ -4,7 +4,11 @@ spring:
     username: dbadmin
     password: Coinbit#dba12~!
     driver-class-name: com.mysql.cj.jdbc.Driver
+  mvc:
+    view:
+      suffix: .jsp
+      prefix: /WEB-INF/jsp/
 
 xrp:
-  url: http://localhost:51234/
+  url: http://172.26.6.223:51234/
   test: false
