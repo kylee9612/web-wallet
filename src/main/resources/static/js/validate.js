@@ -1,7 +1,7 @@
 function generate() {
     $.ajax({
         type: "GET",
-        url: "http://localhost:8090/api/v2/xrp/generate",
+        url: "http://127.0.0.1:18080/api/v2/xrp/generate",
         success: function (data) {
             $("#from_public").val(data.publicKey);
             $("#from_private").val(data.privateKey);
@@ -26,9 +26,9 @@ function from_valid() {
     if (publicKey === "") {
         type = "GET"
         if (classicAddress === null)
-            url = "http://localhost:8090/api/v2/xrp/balance?address=" + xAddress
+            url = "http://127.0.0.1:18080/api/v2/xrp/balance?address=" + xAddress
         else if (xAddress !== null)
-            url = "http://localhost:8090/api/v2/xrp/balance?address=" + classicAddress
+            url = "http://127.0.0.1:18080/api/v2/xrp/balance?address=" + classicAddress
         $.ajax({
             type: type,
             url: url,
@@ -52,7 +52,7 @@ function from_valid() {
             "privateKey": privateKey
         }
         type = "POST"
-        url = "http://localhost:8090/api/v2/xrp/wallet"
+        url = "http://127.0.0.1:18080/api/v2/xrp/wallet"
 
         console.log(data)
         $.ajax({
@@ -93,9 +93,9 @@ function to_valid() {
     let url = ""
     type = "GET"
     if (classicAddress === null)
-        url = "http://localhost:8090/api/v2/xrp/balance?address=" + xAddress
+        url = "http://127.0.0.1:18080/api/v2/xrp/balance?address=" + xAddress
     else
-        url = "http://localhost:8090/api/v2/xrp/balance?address=" + classicAddress
+        url = "http://127.0.0.1:18080/api/v2/xrp/balance?address=" + classicAddress
     $.ajax({
         type: type,
         url: url,
@@ -133,7 +133,7 @@ function send() {
         }
         $.ajax({
             type: "POST",
-            url: "http://localhost:8090/api/v2/xrp/send",
+            url: "http://127.0.0.1:18080/api/v2/xrp/send",
             contentType: "application/json",
             dataType: "JSON",
             data: JSON.stringify(data),
