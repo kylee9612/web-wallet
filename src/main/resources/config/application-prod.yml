@@ -12,3 +12,7 @@ spring:
 xrp:
   url: http://172.26.6.223:51234/
   test: false
+
+crypto:
+  ip: http://172.28.9.61
+  port: 9050
