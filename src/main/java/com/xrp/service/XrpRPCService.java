@@ -12,6 +12,8 @@ import org.xrpl.xrpl4j.client.XrplClient;
 import org.xrpl.xrpl4j.model.client.XrplRequestParams;
 import org.xrpl.xrpl4j.model.client.XrplResult;
 
+import javax.annotation.PostConstruct;
+
 @Service
 public class XrpRPCService {
     private static final Logger log = LoggerFactory.getLogger(XrpRPCService.class);
@@ -23,6 +25,7 @@ public class XrpRPCService {
     @Value("${xrp.url}")
     private String url;
 
+    @PostConstruct
     private void init() {
         if (jsonRpcClient == null && xrplClient == null) {
             xrplClient = new XrplClient(HttpUrl.get(url));
@@ -31,7 +34,6 @@ public class XrpRPCService {
     }
 
     public XrplResult jsonRpcRequest(String methods, XrplRequestParams params){
-        init();
         try {
             JsonRpcRequest rpcRequest = JsonRpcRequest
                     .builder()
