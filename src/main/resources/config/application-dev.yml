@@ -3,14 +3,14 @@ spring:
     url: jdbc:mysql://d-rds02-m.cxskmjj18ljm.ap-northeast-2.rds.amazonaws.com:3306/?useUnicode=true&autoReconnect=true&useSSL=false&characterEncoding=utf8&allowMultiQueries=true&serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true
     username: dbadmin
     password: Coinbit#dba12~!
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    driver-class-name: com.mysql.jdbc.Driver
   mvc:
     view:
       suffix: .jsp
       prefix: /WEB-INF/jsp/
 
 xrp:
-  url: http://172.27.3.182/51234
+  url: http://172.27.3.182/51234/
   test: true
 
 crypto:

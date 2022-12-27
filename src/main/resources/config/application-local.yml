@@ -12,7 +12,6 @@ spring:
 xrp:
   url: http://localhost:51234/
   test: true
-#  url : https://s.altnet.rippletest.net:51234/
 
 crypto:
   ip: http://127.0.0.1
