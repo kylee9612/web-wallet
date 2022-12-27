@@ -8,8 +8,12 @@ import okhttp3.HttpUrl;
 import org.bouncycastle.crypto.util.PublicKeyFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.configurationprocessor.json.JSONException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import org.xrpl.xrpl4j.client.JsonRpcClientErrorException;
 import org.xrpl.xrpl4j.client.JsonRpcRequest;
@@ -42,10 +46,15 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 @Service
 public class XrpClientService {
     private static final Logger log = LoggerFactory.getLogger(XrpClientService.class);
+
+    @Autowired
+    @Qualifier("prop")
+    Properties properties;
 
     @Value("${xrp.url}")
     private String url;
@@ -57,10 +66,7 @@ public class XrpClientService {
     private XrpRequestParamUtil paramUtil;
 
     public XrpClientService() {
-        System.out.println(url);
-        if (url == null) {
-            url = "http://localhost:51234/";
-        }
+        url = (String) properties.get("xrp.url");
         xrplClient = new XrplClient(HttpUrl.get(url));
         faucetClient = FaucetClient.construct(HttpUrl.get("https://faucet.altnet.rippletest.net"));
         paramUtil = new XrpRequestParamUtil();
