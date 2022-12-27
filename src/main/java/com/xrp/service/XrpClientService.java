@@ -42,6 +42,7 @@ import org.xrpl.xrpl4j.model.immutables.FluentCompareTo;
 import org.xrpl.xrpl4j.model.transactions.*;
 import org.xrpl.xrpl4j.wallet.Wallet;
 
+import javax.annotation.PostConstruct;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -52,9 +53,6 @@ import java.util.Properties;
 public class XrpClientService {
     private static final Logger log = LoggerFactory.getLogger(XrpClientService.class);
 
-    @Autowired
-    @Qualifier("prop")
-    Properties properties;
 
     @Value("${xrp.url}")
     private String url;
@@ -65,8 +63,8 @@ public class XrpClientService {
     private FaucetClient faucetClient;
     private XrpRequestParamUtil paramUtil;
 
-    public XrpClientService() {
-        url = (String) properties.get("xrp.url");
+    @PostConstruct
+    private void init(){
         xrplClient = new XrplClient(HttpUrl.get(url));
         faucetClient = FaucetClient.construct(HttpUrl.get("https://faucet.altnet.rippletest.net"));
         paramUtil = new XrpRequestParamUtil();
