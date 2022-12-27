@@ -10,7 +10,7 @@ spring:
       prefix: /WEB-INF/jsp/
 
 xrp:
-  url: http://172.27.3.182/51234/
+  url: http://172.27.3.182:51234/
   test: true
 
 crypto:
