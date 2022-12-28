@@ -8,6 +8,8 @@ spring:
     view:
       suffix: .jsp
       prefix: /WEB-INF/jsp/
+  jpa:
+    open-in-view: false
 
 xrp:
   url: http://localhost:51234/

@@ -1,12 +1,11 @@
 package com.xrp.service;
 
 import okhttp3.HttpUrl;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.xrpl.xrpl4j.client.JsonRpcClient;
-import org.xrpl.xrpl4j.client.JsonRpcClientErrorException;
 import org.xrpl.xrpl4j.client.JsonRpcRequest;
 import org.xrpl.xrpl4j.client.XrplClient;
 import org.xrpl.xrpl4j.model.client.XrplRequestParams;
@@ -16,7 +15,7 @@ import javax.annotation.PostConstruct;
 
 @Service
 public class XrpRPCService {
-    private static final Logger log = LoggerFactory.getLogger(XrpRPCService.class);
+    private static final Logger log = LogManager.getLogger(XrpRPCService.class);
 
     private XrplClient xrplClient;
 

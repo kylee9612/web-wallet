@@ -17,11 +17,20 @@
             </Policies>
             <DefaultRolloverStrategy max="20" fileIndex="min" />
         </RollingFile>
+        <RollingFile name="FileLogError" fileName="/home/coinbit/logs/XRPWallet/springError.log" filePattern="/home/coinbit/logs/XRPWallet/xrpError-%d{yyyy-MM-dd}-%i.log">
+            <PatternLayout pattern="${LOG_PATTERN}" charset="UTF-8"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1"/>
+                <SizeBasedTriggeringPolicy size="10000KB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="20" fileIndex="min"/>
+        </RollingFile>
     </Appenders>
     <Loggers>
         <Root level="info">
             <AppenderRef ref="ConsoleLog" />
             <AppenderRef ref="FileLog" />
+            <AppenderRef ref="FileLogError" level="ERROR"/>
         </Root>
     </Loggers>
 </Configuration>

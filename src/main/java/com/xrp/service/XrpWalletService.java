@@ -1,6 +1,8 @@
 package com.xrp.service;
 
 import com.xrp.util.XrpRequestParamUtil;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -14,6 +16,7 @@ import org.xrpl.xrpl4j.wallet.WalletFactory;
 
 @Service
 public class XrpWalletService {
+    private static final Logger log = LogManager.getLogger(XrpWalletService.class);
 
     @Value("${xrp.test}")
     private boolean isTest;

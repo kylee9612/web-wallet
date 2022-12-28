@@ -3,9 +3,9 @@ package com.xrp.controller;
 import com.xrp.service.SignService;
 import com.xrp.service.XrpRPCService;
 import com.xrp.service.XrpWalletService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.simple.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -15,7 +15,7 @@ import org.xrpl.xrpl4j.wallet.Wallet;
 @Controller
 public class XrpWalletController {
 
-    private static final Logger log = LoggerFactory.getLogger(XrpWalletController.class);
+    private static final Logger log = LogManager.getLogger(XrpWalletController.class);
 
     @Autowired
     private SignService signService;

@@ -1,6 +1,8 @@
 package com.xrp.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +18,7 @@ import java.util.HashMap;
 @RestController
 @RequestMapping(value = "api/v2/xrp")
 public class MainController {
+    private static final Logger log = LogManager.getLogger(MainController.class);
 
     @Autowired
     private XrpController xrpController;
@@ -38,7 +41,7 @@ public class MainController {
         JSONObject object = xrpWalletController.getWalletInfoWithBalance(wallet);
         FeeResult fee = xrpController.getFee();
         object.put("fee",fee.drops().baseFee());
-        System.out.println(object);
+        log.info(object);
         return object;
     }
 
@@ -61,6 +64,7 @@ public class MainController {
 
     @GetMapping("/balance")
     public String getBalance(@RequestParam("address") String address) throws JsonRpcClientErrorException {
+        log.info("address : "+address+" checked balance");
         return xrpController.checkBalance(Address.of(address));
     }
 
@@ -82,6 +86,7 @@ public class MainController {
         xrpController.sendXRP(wallet,toAddress,amount);
         JSONObject object = xrpWalletController.getWalletInfo(wallet);
         object.put("to_balance",xrpController.checkBalance(Address.of(toAddress)));
+        log.info("address : "+wallet.classicAddress()+" sending "+amount+"XRP to "+toAddress);
         return object;
     }
 
@@ -93,6 +98,7 @@ public class MainController {
         object.put("Account",result.accountData().account());
         object.put("Regular Key",result.accountData().regularKey());
         object.put("Ledger Index",result.ledgerIndex().get());
+        log.info(object);
         return object;
     }
 }

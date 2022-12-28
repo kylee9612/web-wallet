@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<Configuration status="INFO">
+<Configuration status="DEBUG">
     <Properties>
         <Property name="LOG_PATTERN">%d{HH:mm:ss.SSSZ} [%t] %-5level %logger{36} - %msg%n</Property>
     </Properties>
@@ -8,20 +8,32 @@
             <PatternLayout pattern="${LOG_PATTERN}" charset="UTF-8"/>
         </Console>
         <RollingFile name="FileLog"
-                     fileName="c:/HANSSAK/work/logs/spring.log"
-                     filePattern="c:/HANSSAK/work/logs/xrp-%d{yyyy-MM-dd}-%i.log">
-            <PatternLayout pattern="${LOG_PATTERN}" charset="UTF-8" />
+                     fileName="C:\HANSSAK\work\logs/spring.log"
+                     filePattern="C:\HANSSAK\work\logs/xrp-%d{yyyy-MM-dd}-%i.log">
+            <PatternLayout pattern="${LOG_PATTERN}" charset="UTF-8"/>
             <Policies>
-                <TimeBasedTriggeringPolicy interval="1" />
-                <SizeBasedTriggeringPolicy size="10000KB" />
+                <TimeBasedTriggeringPolicy interval="1"/>
+                <SizeBasedTriggeringPolicy size="10000KB"/>
             </Policies>
-            <DefaultRolloverStrategy max="20" fileIndex="min" />
+            <DefaultRolloverStrategy max="20" fileIndex="min"/>
+        </RollingFile>
+
+        <RollingFile name="FileLogError">
+            <FileName>C:\HANSSAK\work\logs/springError.log</FileName>
+            <FilePattern>C:\HANSSAK\work\logs/xrpError-%d{yyyy-MM-dd}-%i.log</FilePattern>
+            <PatternLayout pattern="${LOG_PATTERN}" charset="UTF-8"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1"/>
+                <SizeBasedTriggeringPolicy size="10000KB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="20" fileIndex="min"/>
         </RollingFile>
     </Appenders>
     <Loggers>
-        <Root level="info">
-            <AppenderRef ref="ConsoleLog" />
-            <AppenderRef ref="FileLog" />
+        <Root level="debug" additivity="true">
+            <AppenderRef ref="ConsoleLog"/>
+            <AppenderRef ref="FileLog"/>
+            <AppenderRef ref="FileLogError" level="ERROR"/>
         </Root>
     </Loggers>
 </Configuration>

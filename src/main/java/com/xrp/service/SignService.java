@@ -1,8 +1,8 @@
 package com.xrp.service;
 
 import com.google.common.primitives.UnsignedInteger;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 import org.xrpl.xrpl4j.codec.addresses.VersionType;
 import org.xrpl.xrpl4j.crypto.KeyMetadata;
@@ -20,7 +20,7 @@ import org.xrpl.xrpl4j.wallet.Wallet;
 
 @Service
 public class SignService {
-    private static final Logger log = LoggerFactory.getLogger(SignService.class);
+    private static final Logger log = LogManager.getLogger(SignService.class);
     public SignedTransaction<Payment> signUsingSingleKeySignatureService(Wallet wallet) {
         PrivateKey privateKey = PrivateKey.fromBase16EncodedPrivateKey(wallet.privateKey().get());
         SingleKeySignatureService signatureService = new SingleKeySignatureService(privateKey);
