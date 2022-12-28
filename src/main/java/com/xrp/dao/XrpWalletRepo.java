@@ -1,11 +1,9 @@
 package com.xrp.dao;
 
-
-import com.xrp.model.vo.XrpAccount;
+import com.xrp.model.vo.XrpWallet;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface XrpRepository extends JpaRepository<XrpAccount, Long> {
-
+public interface XrpWalletRepo extends JpaRepository<XrpWallet, String> {
 }
