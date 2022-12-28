@@ -1,10 +1,10 @@
 plugins {
-	id 'java'
-	id 'war'
-	id 'org.springframework.boot' version '2.7.5'
-	id 'io.spring.dependency-management' version '1.0.15.RELEASE'
-	id 'org.springframework.experimental.aot' version '0.12.1'
-	id 'org.hibernate.orm'
+    id 'java'
+    id 'war'
+    id 'org.springframework.boot' version '2.7.5'
+    id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+    id 'org.springframework.experimental.aot' version '0.12.1'
+    id 'org.hibernate.orm'
 }
 
 group = 'com.axiasoft'
@@ -12,60 +12,63 @@ version = '1.0.0'
 sourceCompatibility = '17'
 
 configurations {
-	compileOnly {
-		extendsFrom annotationProcessor
-	}
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+    configureEach {
+        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+    }
 }
 
 repositories {
-	maven { url 'https://repo.spring.io/release' }
-	mavenCentral()
+    maven { url 'https://repo.spring.io/release' }
+    mavenCentral()
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
 
-	implementation 'io.openliberty.features:grpcClient-1.0:22.0.0.7'
-	compileOnly 'org.projectlombok:lombok'
-	developmentOnly 'org.springframework.boot:spring-boot-devtools'
-	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
-	annotationProcessor 'org.projectlombok:lombok'
-	providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	implementation 'org.springframework.boot:spring-boot-starter-websocket:3.0.0'
+    implementation 'io.openliberty.features:grpcClient-1.0:22.0.0.7'
+    compileOnly 'org.projectlombok:lombok'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+    annotationProcessor 'org.projectlombok:lombok'
+    providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    implementation 'org.springframework.boot:spring-boot-starter-websocket:3.0.0'
 
-	// https://mvnrepository.com/artifact/org.apache.tomcat.embed/tomcat-embed-jasper
-	implementation 'org.apache.tomcat.embed:tomcat-embed-jasper:9.0.58'
+    // https://mvnrepository.com/artifact/org.apache.tomcat.embed/tomcat-embed-jasper
+    implementation 'org.apache.tomcat.embed:tomcat-embed-jasper:9.0.58'
 
-	implementation 'org.xrpl:xrpl4j-crypto-parent:2.5.1'
-	implementation 'org.xrpl:xrpl4j-crypto-core:2.5.1'
-	implementation 'org.xrpl:xrpl4j-client:2.5.1'
-	implementation 'org.xrpl:xrpl4j-bom:2.5.1'
-	implementation 'org.xrpl:xrpl4j-binary-codec:2.5.1'
-	implementation 'org.xrpl:xrpl4j-keypairs:2.5.1'
-	implementation 'org.xrpl:xrpl4j-address-codec:2.5.1'
-	implementation 'org.xrpl:xrpl4j-crypto-bouncycastle:2.5.1'
-	// https://mvnrepository.com/artifact/org.immutables/value
-	compileOnly group: 'org.immutables', name: 'value', version: '2.9.2'
-	// https://mvnrepository.com/artifact/com.mysql/mysql-connector-j
-	implementation 'com.mysql:mysql-connector-j:8.0.31'
-	// https://mvnrepository.com/artifact/com.googlecode.json-simple/json-simple
-	implementation 'com.googlecode.json-simple:json-simple:1.1.1'
-
+    implementation 'org.xrpl:xrpl4j-crypto-parent:2.5.1'
+    implementation 'org.xrpl:xrpl4j-crypto-core:2.5.1'
+    implementation 'org.xrpl:xrpl4j-client:2.5.1'
+    implementation 'org.xrpl:xrpl4j-bom:2.5.1'
+    implementation 'org.xrpl:xrpl4j-binary-codec:2.5.1'
+    implementation 'org.xrpl:xrpl4j-keypairs:2.5.1'
+    implementation 'org.xrpl:xrpl4j-address-codec:2.5.1'
+    implementation 'org.xrpl:xrpl4j-crypto-bouncycastle:2.5.1'
+    // https://mvnrepository.com/artifact/org.immutables/value
+    compileOnly group: 'org.immutables', name: 'value', version: '2.9.2'
+    // https://mvnrepository.com/artifact/com.mysql/mysql-connector-j
+    implementation 'com.mysql:mysql-connector-j:8.0.31'
+    // https://mvnrepository.com/artifact/com.googlecode.json-simple/json-simple
+    implementation 'com.googlecode.json-simple:json-simple:1.1.1'
+    implementation 'org.springframework.boot:spring-boot-starter-log4j2'
 }
 
 tasks.named('test') {
-	useJUnitPlatform()
+    useJUnitPlatform()
 }
 
 tasks.named('bootBuildImage') {
-	builder = 'paketobuildpacks/builder:tiny'
-	environment = ['BP_NATIVE_IMAGE': 'true']
+    builder = 'paketobuildpacks/builder:tiny'
+    environment = ['BP_NATIVE_IMAGE': 'true']
 }
 
 bootRun {
-	String activeProfile = System.properties['spring.profiles.active']
-	systemProperty "spring.profiles.active", activeProfile
+    String activeProfile = System.properties['spring.profiles.active']
+    systemProperty "spring.profiles.active", activeProfile
 }

@@ -173,7 +173,7 @@ public class XrpClientService {
                 .orElseThrow(() -> new RuntimeException("LedgerIndex not available."));
 
         final UnsignedInteger lastLedgerSequence = UnsignedInteger.valueOf(
-                validatedLedger.plus(UnsignedInteger.valueOf(4)).unsignedIntegerValue().intValue()
+                validatedLedger.plus(UnsignedInteger.valueOf(6)).unsignedIntegerValue().intValue()
         ); // <-- LastLedgerSequence is the current ledger index + 4
 
         Payment payment = Payment.builder()

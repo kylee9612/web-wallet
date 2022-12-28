@@ -16,3 +16,6 @@ xrp:
 crypto:
   ip: http://127.0.0.1
   port: 9050
+
+logging:
+  config: classpath:config/log4j2-local.xml

@@ -3,7 +3,7 @@ spring:
     url: jdbc:mysql://127.0.0.1:13308/?useUnicode=true&autoReconnect=true&useSSL=false&characterEncoding=utf8&allowMultiQueries=true&serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true
     username: dbadmin
     password: Coinbit#dba12~!
-    driver-class-name: com.mysql.jdbc.Driver
+    driver-class-name: com.mysql.cj.jdbc.Driver
   mvc:
     view:
       suffix: .jsp
@@ -16,3 +16,6 @@ xrp:
 crypto:
   ip: http://172.28.9.61
   port: 9050
+
+logging:
+  config: classpath:config/log4j2-prod.xml
