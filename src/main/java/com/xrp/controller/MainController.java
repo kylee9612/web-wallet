@@ -81,6 +81,7 @@ public class MainController {
         String publicKey = map.get("publicKey").toString();
         String privateKey = map.get("privateKey").toString();
         String toAddress = map.get("address").toString();
+        String toTag = map.get("to_tag").toString();
         BigDecimal amount = BigDecimal.valueOf(Double.parseDouble(map.get("amount").toString()));
         Wallet wallet = xrpWalletController.getWallet(publicKey,privateKey);
         xrpController.sendXRP(wallet,toAddress,amount);

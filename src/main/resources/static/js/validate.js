@@ -6,7 +6,7 @@ function generate() {
             $("#from_public").val(data.publicKey);
             $("#from_private").val(data.privateKey);
             $("#from_address").val(data.classicAddress);
-            $("#from_xAddress").val(data.xAddress);
+            $("#from_tag").val(data.tag);
         },
         error: function (error) {
             console.log(error)
@@ -20,15 +20,12 @@ function from_valid() {
     let publicKey = $("#from_public").val();
     let privateKey = $("#from_private").val();
     let classicAddress = $("#from_address").val();
-    let xAddress = $("#from_xAddress").val();
+    let tag = $("#from_tag").val();
     let type = ""
     let url = ""
-    if (publicKey === "") {
+    if (publicKey === null && classicAddress !== null && tag !== null) {
         type = "GET"
-        if (classicAddress === null)
-            url = "/api/v2/xrp/balance?address=" + xAddress
-        else if (xAddress !== null)
-            url = "/api/v2/xrp/balance?address=" + classicAddress
+        url = "/api/v2/xrp/balance?address=" + classicAddress +"&tag="+tag
         $.ajax({
             type: type,
             url: url,
@@ -46,7 +43,7 @@ function from_valid() {
                 $("#from_valid").val("false")
             }
         })
-    } else if (classicAddress !== null) {
+    } else if (publicKey !== null){
         let data = {
             "publicKey": publicKey,
             "privateKey": privateKey
@@ -68,7 +65,7 @@ function from_valid() {
             success: function (data) {
                 console.log(data)
                 $("#from_address").val(data.classicAddress);
-                $("#from_xAddress").val(data.xAddress);
+                $("#from_tag").val(data.tag);
                 $("#from_balance").val(data.balance);
                 $("#from_valid").val("valid");
                 $("#fee").val("0.0000" + data.fee.value)
@@ -76,42 +73,43 @@ function from_valid() {
             error: function (error) {
                 console.log("Not Valid Keys")
                 $("#from_address").val("");
-                $("#from_xAddress").val("");
+                $("#from_tag").val("");
                 $("#from_balance").val("");
                 $("#from_valid").val("false")
             }
         })
     } else {
-        alert("Public Key or Classic Address Entered")
+        alert("Public Key or Classic Address and tag Not Entered")
     }
 }
 
 function to_valid() {
     let classicAddress = $("#to_address").val();
-    let xAddress = $("#to_xAddress").val();
+    let tag = $("#to_tag").val();
     let type = ""
     let url = ""
     type = "GET"
-    if (classicAddress === null)
-        url = "/api/v2/xrp/balance?address=" + xAddress
-    else
-        url = "/api/v2/xrp/balance?address=" + classicAddress
-    $.ajax({
-        type: type,
-        url: url,
-        beforeSend: function () {
-            $("#to_balance").val("");
-            $("#to_valid").val("");
-        },
-        success: function (data) {
-            $("#to_balance").val(data);
-            $("#to_valid").val("valid");
-        },
-        error: function (error) {
-            console.log("Not Valid Address")
-            $("#to_valid").val("false")
-        }
-    })
+    if (classicAddress !== null && tag !== null) {
+        url = "/api/v2/xrp/balance?address=" + classicAddress + "&tag=" + tag
+        $.ajax({
+            type: type,
+            url: url,
+            beforeSend: function () {
+                $("#to_balance").val("");
+                $("#to_valid").val("");
+            },
+            success: function (data) {
+                $("#to_balance").val(data);
+                $("#to_valid").val("valid");
+            },
+            error: function (error) {
+                console.log("Not Valid Address")
+                $("#to_valid").val("false")
+            }
+        })
+    } else if (classicAddress === null || tag === null) {
+        alert("지갑 주소와 태그를 확인하세요")
+    }
 }
 
 function send() {

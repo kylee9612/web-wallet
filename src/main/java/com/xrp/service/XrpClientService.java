@@ -181,7 +181,7 @@ public class XrpClientService {
 
         // Sign the Payment
         final SignedTransaction<Payment> signedPayment = signatureService.sign(KeyMetadata.EMPTY, payment);
-        System.out.println("Signed Payment: " + signedPayment.signedTransaction());
+        log.info("Signed Payment: " + signedPayment.signedTransaction());
 
         // Submit the Payment
         final SubmitResult<Transaction> submitResult = xrplClient.submit(signedPayment);
@@ -206,14 +206,14 @@ public class XrpClientService {
             );
 
             if (transactionResult.validated()) {
-                System.out.println("Payment was validated with result code " + transactionResult.metadata().get().transactionResult());
+                log.info("Payment was validated with result code " + transactionResult.metadata().get().transactionResult());
                 transactionValidated = true;
             } else {
                 final boolean lastLedgerSequenceHasPassed = FluentCompareTo.
                         is(latestValidatedLedgerIndex.unsignedLongValue())
                         .greaterThan(UnsignedLong.valueOf(lastLedgerSequence.intValue()));
                 if (lastLedgerSequenceHasPassed) {
-                    System.out.println("LastLedgerSequence has passed. Last tx response: " +
+                    log.info("LastLedgerSequence has passed. Last tx response: " +
                             transactionResult);
                     transactionExpired = true;
                 } else {
@@ -223,13 +223,14 @@ public class XrpClientService {
         }
 
         // Check transaction results
-        System.out.println(transactionResult);
-        System.out.println("Explorer link: https://testnet.xrpl.org/transactions/" + signedPayment.hash());
+        log.info(transactionResult);
+        if(isTest) {
+            log.info("Explorer link: https://testnet.xrpl.org/transactions/" + signedPayment.hash());
+        }
         transactionResult.metadata().ifPresent(metadata -> {
-            System.out.println("Result code: " + metadata.transactionResult());
-
+            log.info("Result code: " + metadata.transactionResult());
             metadata.deliveredAmount().ifPresent(deliveredAmount ->
-                    System.out.println("XRP Delivered: " + ((XrpCurrencyAmount) deliveredAmount).toXrp())
+                    log.info("XRP Delivered: " + ((XrpCurrencyAmount) deliveredAmount).toXrp())
             );
         });
     }

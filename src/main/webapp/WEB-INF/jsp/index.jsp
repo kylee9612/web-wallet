@@ -15,8 +15,8 @@
             <input type="text" id="from_address" class="in_body" placeholder="classicAddress"/>
         </label>
 
-        <label for="from_xAddress">xAddress
-            <input type="text" id="from_xAddress" class="in_body" placeholder="xAddress"/>
+        <label for="from_tag">xAddress
+            <input type="text" id="from_tag" class="in_body" placeholder="Destination Tag"/>
         </label>
 
         <label for="from_balance">balance
@@ -41,8 +41,8 @@
         <label for="to_address">Classic Address
             <input type="text" id="to_address" class="in_body" placeholder="classicAddress"/>
         </label>
-        <label for="to_xAddress">xAddress
-            <input type="text" id="to_xAddress" class="in_body" placeholder="xAddress"/>
+        <label for="to_tag">xAddress
+            <input type="text" id="to_tag" class="in_body" placeholder="Destination Tag"/>
         </label>
         <label for="to_balance">balance
             <input type="text" id="to_balance" class="in_body" readonly="readonly">
