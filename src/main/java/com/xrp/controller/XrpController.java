@@ -1,7 +1,7 @@
 package com.xrp.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.xrp.dao.XrpAccountRepo;
+import com.xrp.dao.master.XrpAccountRepo;
 import com.xrp.model.vo.XrpAccount;
 import com.xrp.service.XrpClientService;
 import com.xrp.service.XrpWalletService;
@@ -9,6 +9,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.xrpl.xrpl4j.client.JsonRpcClientErrorException;
 import org.xrpl.xrpl4j.model.client.accounts.AccountInfoRequestParams;
 import org.xrpl.xrpl4j.model.client.accounts.AccountInfoResult;
@@ -21,6 +22,7 @@ import java.math.BigDecimal;
 import java.util.Map;
 
 @Controller
+@Transactional
 public class XrpController extends Thread {
 
     private static final Logger log = LogManager.getLogger(XrpController.class);

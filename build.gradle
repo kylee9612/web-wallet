@@ -7,6 +7,8 @@ plugins {
     id 'org.hibernate.orm'
 }
 
+apply plugin: 'io.spring.dependency-management'
+
 group = 'com.axiasoft'
 version = '1.0.0'
 sourceCompatibility = '17'
@@ -59,6 +61,8 @@ dependencies {
     // https://mvnrepository.com/artifact/com.googlecode.json-simple/json-simple
     implementation 'com.googlecode.json-simple:json-simple:1.1.1'
     implementation 'org.springframework.boot:spring-boot-starter-log4j2'
+
+    implementation files("libs/cryptobridge-1.2.jar")
 }
 
 tasks.named('test') {

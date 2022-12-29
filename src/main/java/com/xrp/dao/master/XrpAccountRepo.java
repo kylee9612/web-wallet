@@ -1,4 +1,4 @@
-package com.xrp.dao;
+package com.xrp.dao.master;
 
 
 import com.xrp.model.vo.XrpAccount;

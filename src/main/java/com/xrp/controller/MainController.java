@@ -5,6 +5,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.xrpl.xrpl4j.client.JsonRpcClientErrorException;
 import org.xrpl.xrpl4j.model.client.accounts.AccountInfoResult;
@@ -16,6 +17,7 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 
 @RestController
+@Transactional
 @RequestMapping(value = "api/v2/xrp")
 public class MainController {
     private static final Logger log = LogManager.getLogger(MainController.class);

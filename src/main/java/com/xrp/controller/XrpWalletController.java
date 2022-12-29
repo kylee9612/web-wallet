@@ -1,7 +1,7 @@
 package com.xrp.controller;
 
-import com.xrp.dao.XrpAccountRepo;
-import com.xrp.dao.XrpWalletRepo;
+import com.xrp.dao.master.XrpAccountRepo;
+import com.xrp.dao.master.XrpWalletRepo;
 import com.xrp.model.vo.XrpWallet;
 import com.xrp.service.SignService;
 import com.xrp.service.XrpRPCService;

@@ -7,6 +7,7 @@ import org.xrpl.xrpl4j.wallet.Wallet;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Table;
 import java.math.BigDecimal;
 
 @Entity
