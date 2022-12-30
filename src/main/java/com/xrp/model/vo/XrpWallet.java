@@ -1,5 +1,6 @@
 package com.xrp.model.vo;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.xrpl.xrpl4j.wallet.Wallet;
@@ -12,7 +13,9 @@ import java.math.BigDecimal;
 
 @Entity
 @Getter
+@Table(name = "xrp_wallet")
 @NoArgsConstructor
+@AllArgsConstructor
 public class XrpWallet{
     @Id
     private String address;

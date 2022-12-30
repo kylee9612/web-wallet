@@ -1,13 +1,12 @@
 spring:
   datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
     master:
-      driver-class-name: com.mysql.cj.jdbc.Driver
-      jdbc-url: jdbc:mysql://127.0.0.1:3306/world?useUnicode=true&autoReconnect=true&useSSL=false&characterEncoding=utf8&allowMultiQueries=true&serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true
+      url: jdbc:mysql://127.0.0.1:3306/world?useUnicode=true&autoReconnect=true&useSSL=false&characterEncoding=utf8&allowMultiQueries=true&serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true
       username: root
       password: root
     slave:
-      driver-class-name: com.mysql.cj.jdbc.Driver
-      jdbc-url: jdbc:mysql://127.0.0.1:3306/world?useUnicode=true&autoReconnect=true&useSSL=false&characterEncoding=utf8&allowMultiQueries=true&serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true
+      url: jdbc:mysql://127.0.0.1:3306/world?useUnicode=true&autoReconnect=true&useSSL=false&characterEncoding=utf8&allowMultiQueries=true&serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true
       username: root
       password: root
   mvc:
@@ -29,6 +28,9 @@ xrp:
 crypto:
   ip: http://127.0.0.1
   port: 9050
+
+security:
+    option: upsign
 
 logging:
   config: classpath:config/log4j2-local.xml
