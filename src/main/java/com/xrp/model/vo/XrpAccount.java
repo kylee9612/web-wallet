@@ -26,13 +26,8 @@ public class XrpAccount {
     @Column
     private String address;
     @Column
-    private int destination;
+    private long destination;
 
     @Column
     private BigDecimal balance;
-
-    @PostConstruct
-    private void init(){
-        destination = (int) (Math.random()*10000000);
-    }
 }

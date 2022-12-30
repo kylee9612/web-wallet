@@ -22,7 +22,7 @@ spring:
       use-new-id-generator-mappings: false
 
 xrp:
-  url: http://localhost:51234/
+  url: http://15.165.156.20:51234/
   test: true
 
 crypto:

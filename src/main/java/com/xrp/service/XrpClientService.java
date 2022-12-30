@@ -3,6 +3,7 @@ package com.xrp.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.primitives.UnsignedInteger;
 import com.google.common.primitives.UnsignedLong;
+import com.xrp.dao.master.UserRepo;
 import com.xrp.dao.master.XrpAccountRepo;
 import com.xrp.model.vo.XrpAccount;
 import com.xrp.util.XrpRequestParamUtil;
@@ -55,13 +56,15 @@ public class XrpClientService {
 
     @Autowired
     private XrpAccountRepo xrpAccountRepo;
+    @Autowired
+    private UserRepo userRepo;
 
     private XrplClient xrplClient;
     private FaucetClient faucetClient;
     private XrpRequestParamUtil paramUtil;
 
     @PostConstruct
-    private void init(){
+    private void init() {
         xrplClient = new XrplClient(HttpUrl.get(url));
         faucetClient = FaucetClient.construct(HttpUrl.get("https://faucet.altnet.rippletest.net"));
         paramUtil = new XrpRequestParamUtil();
@@ -108,8 +111,8 @@ public class XrpClientService {
         }
     }
 
-    public String checkBalance(Address classicAddress, String tag){
-        XrpAccount account = xrpAccountRepo.findFirstByAddressAndDestination(classicAddress.toString(),Integer.parseInt(tag)).orElseThrow();
+    public String checkBalance(Address classicAddress, String tag) {
+        XrpAccount account = xrpAccountRepo.findFirstByAddressAndDestination(classicAddress.toString(), Integer.parseInt(tag)).orElseThrow();
         return account.getBalance().toString();
     }
 
@@ -158,7 +161,7 @@ public class XrpClientService {
         return xrplClient.fee();
     }
 
-    public void sendXRP(Wallet testWallet, String addressTo,BigDecimal bigAmount) throws JsonRpcClientErrorException, JsonProcessingException, InterruptedException {
+    public void sendXRP(Wallet testWallet, String addressTo, String tag, BigDecimal bigAmount) throws JsonRpcClientErrorException, JsonProcessingException, InterruptedException {
         Address classicAddress = testWallet.classicAddress();
 
         AccountInfoRequestParams requestParams = paramUtil.getAccountInfoRequest(classicAddress);
@@ -237,7 +240,7 @@ public class XrpClientService {
 
         // Check transaction results
         log.info(transactionResult);
-        if(isTest) {
+        if (isTest) {
             log.info("Explorer link: https://testnet.xrpl.org/transactions/" + signedPayment.hash());
         }
         transactionResult.metadata().ifPresent(metadata -> {

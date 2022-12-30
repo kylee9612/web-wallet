@@ -2,7 +2,9 @@ package com.xrp.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.xrp.dao.master.XrpAccountRepo;
+import com.xrp.model.vo.User;
 import com.xrp.model.vo.XrpAccount;
+import com.xrp.service.XrpAccountService;
 import com.xrp.service.XrpClientService;
 import com.xrp.service.XrpWalletService;
 import org.apache.logging.log4j.LogManager;
@@ -33,12 +35,14 @@ public class XrpController extends Thread {
     private XrpClientService xrpClientService;
     @Autowired
     private XrpWalletService xrpWalletService;
+    @Autowired
+    private XrpAccountService xrpAccountService;
 
     public String checkServer() {
         return xrpClientService.checkServer();
     }
 
-    public Map<String, Object> getInfo(){
+    public Map<String, Object> getInfo() {
         return xrpClientService.getInfo();
     }
 
@@ -51,14 +55,18 @@ public class XrpController extends Thread {
         int destination = Integer.parseInt(tag);
         xrpClientService.fundFaucet(classicAddress);
         XrpAccount account = xrpAccountRepo
-                .findFirstByAddressAndDestination(address,destination)
+                .findFirstByAddressAndDestination(address, destination)
                 .orElseThrow();
-        BigDecimal balance = BigDecimal.valueOf(Double.parseDouble(xrpClientService.checkBalance(classicAddress,tag))+1000);
+        BigDecimal balance = BigDecimal.valueOf(Double.parseDouble(xrpClientService.checkBalance(classicAddress, tag)) + 1000);
         account.setBalance(balance);
         xrpAccountRepo.save(account);
     }
 
-    public AccountTransactionsResult accountTransactionsResult(Address address){
+    public XrpAccount generateAccount(User user){
+        return xrpAccountService.generateAccount(user.getMb_idx());
+    }
+
+    public AccountTransactionsResult accountTransactionsResult(Address address) {
         return xrpClientService.accountTransactionsResult(address);
     }
 
@@ -66,12 +74,12 @@ public class XrpController extends Thread {
         return xrpClientService.checkBalance(classicAddress, tag);
     }
 
-    public SetRegularKey getRegularKey(Wallet wallet){
+    public SetRegularKey getRegularKey(Wallet wallet) {
         return xrpClientService.getRegularKey(wallet);
     }
 
-    public void sendXRP(Wallet testWallet, String addressTo, BigDecimal amount) throws JsonRpcClientErrorException, JsonProcessingException, InterruptedException {
-        xrpClientService.sendXRP(testWallet,addressTo,amount);
+    public void sendXRP(Wallet testWallet, String addressTo, String tag, BigDecimal amount) throws JsonRpcClientErrorException, JsonProcessingException, InterruptedException {
+        xrpClientService.sendXRP(testWallet, addressTo, tag, amount);
     }
 
     public FeeResult getFee() throws JsonRpcClientErrorException {

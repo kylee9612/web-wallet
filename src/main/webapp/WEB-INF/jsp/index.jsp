@@ -15,7 +15,7 @@
             <input type="text" id="from_address" class="in_body" placeholder="classicAddress"/>
         </label>
 
-        <label for="from_tag">xAddress
+        <label for="from_tag">Destination Tag
             <input type="text" id="from_tag" class="in_body" placeholder="Destination Tag"/>
         </label>
 
@@ -23,7 +23,7 @@
             <input type="text" id="from_balance" class="in_body" readonly="readonly">
         </label>
         <label for="from_valid">
-            <button id="from_valid_button" onclick="from_valid(true)" class="in_body">Check Valid</button>
+            <button id="from_valid_button" onclick="from_valid()" class="in_body">Check Valid</button>
             <input type="text" id="from_valid" class="in_small" readonly="readonly">
         </label>
         <label for="amount">Sending Amount
@@ -41,14 +41,14 @@
         <label for="to_address">Classic Address
             <input type="text" id="to_address" class="in_body" placeholder="classicAddress"/>
         </label>
-        <label for="to_tag">xAddress
+        <label for="to_tag">Destination Tag
             <input type="text" id="to_tag" class="in_body" placeholder="Destination Tag"/>
         </label>
         <label for="to_balance">balance
             <input type="text" id="to_balance" class="in_body" readonly="readonly">
         </label>
         <label for="to_valid">
-            <button id="to_valid_button" onclick="to_valid(true)" class="in_body">Check Valid</button>
+            <button id="to_valid_button" onclick="to_valid()" class="in_body">Check Valid</button>
             <input type="text" id="to_valid" class="in_small" readonly="readonly"/>
         </label>
     </div>
