@@ -1,5 +1,8 @@
 package com.xrp.controller;
 
+import com.xrp.dao.master.XrpAccountRepo;
+import com.xrp.dao.master.XrpWalletRepo;
+import com.xrp.model.vo.XrpWallet;
 import com.xrp.service.SignService;
 import com.xrp.service.XrpRPCService;
 import com.xrp.service.XrpWalletService;
@@ -16,6 +19,12 @@ import org.xrpl.xrpl4j.wallet.Wallet;
 public class XrpWalletController {
 
     private static final Logger log = LogManager.getLogger(XrpWalletController.class);
+
+    @Autowired
+    private XrpAccountRepo xrpAccountRepo;
+
+    @Autowired
+    private XrpWalletRepo xrpWalletRepo;
 
     @Autowired
     private SignService signService;
@@ -35,6 +44,8 @@ public class XrpWalletController {
         if(isTest) {
             xrpController.fundFaucet(wallet.classicAddress());
         }
+        XrpWallet xrpWallet = new XrpWallet(wallet);
+        xrpWalletRepo.save(xrpWallet);
         return wallet;
     }
 
@@ -46,9 +57,9 @@ public class XrpWalletController {
         return xrpWalletService.getWallet(publicKey,privateKey);
     }
 
-    public JSONObject getWalletInfoWithBalance(Wallet wallet) throws JsonRpcClientErrorException {
+    public JSONObject getWalletInfoWithBalance(Wallet wallet, String tag) throws JsonRpcClientErrorException {
         JSONObject object = getWalletInfo(wallet);
-        String balance = xrpController.checkBalance(wallet.classicAddress());
+        String balance = xrpController.checkBalance(wallet.classicAddress(), tag);
         object.put("balance",balance);
         return object;
     }
@@ -58,7 +69,6 @@ public class XrpWalletController {
         object.put("publicKey",wallet.publicKey().toString());
         object.put("privateKey",wallet.privateKey().get().toString());
         object.put("classicAddress",wallet.classicAddress().toString());
-        object.put("xAddress",wallet.xAddress().toString());
         return object;
     }
 }

@@ -3,9 +3,8 @@ package com.xrp.model.vo;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
+import org.xrpl.xrpl4j.wallet.Wallet;
 
-import javax.annotation.PostConstruct;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -13,26 +12,26 @@ import javax.persistence.Table;
 import java.math.BigDecimal;
 
 @Entity
-@Table(name = "xrp_account")
 @Getter
-@Setter
+@Table(name = "xrp_wallet")
 @NoArgsConstructor
 @AllArgsConstructor
-public class XrpAccount {
-
+public class XrpWallet{
     @Id
-    private long mb_idx;
+    private String address;
 
     @Column
-    private String address;
+    private String publicKey;
+
     @Column
-    private int destination;
+    private String privateKey;
 
     @Column
     private BigDecimal balance;
 
-    @PostConstruct
-    private void init(){
-        destination = (int) (Math.random()*10000000);
+    public XrpWallet(Wallet wallet){
+        this.address = wallet.classicAddress().toString();
+        this.publicKey = wallet.publicKey();
+        this.privateKey = wallet.privateKey().get();
     }
 }

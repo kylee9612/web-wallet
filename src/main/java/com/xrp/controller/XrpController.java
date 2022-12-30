@@ -1,12 +1,15 @@
 package com.xrp.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.xrp.dao.master.XrpAccountRepo;
+import com.xrp.model.vo.XrpAccount;
 import com.xrp.service.XrpClientService;
 import com.xrp.service.XrpWalletService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.xrpl.xrpl4j.client.JsonRpcClientErrorException;
 import org.xrpl.xrpl4j.model.client.accounts.AccountInfoRequestParams;
 import org.xrpl.xrpl4j.model.client.accounts.AccountInfoResult;
@@ -19,10 +22,13 @@ import java.math.BigDecimal;
 import java.util.Map;
 
 @Controller
+@Transactional
 public class XrpController extends Thread {
 
     private static final Logger log = LogManager.getLogger(XrpController.class);
 
+    @Autowired
+    private XrpAccountRepo xrpAccountRepo;
     @Autowired
     private XrpClientService xrpClientService;
     @Autowired
@@ -40,12 +46,24 @@ public class XrpController extends Thread {
         xrpClientService.fundFaucet(classicAddress);
     }
 
+    public void fundFaucet(Address classicAddress, String tag) throws Exception {
+        String address = classicAddress.toString();
+        int destination = Integer.parseInt(tag);
+        xrpClientService.fundFaucet(classicAddress);
+        XrpAccount account = xrpAccountRepo
+                .findFirstByAddressAndDestination(address,destination)
+                .orElseThrow();
+        BigDecimal balance = BigDecimal.valueOf(Double.parseDouble(xrpClientService.checkBalance(classicAddress,tag))+1000);
+        account.setBalance(balance);
+        xrpAccountRepo.save(account);
+    }
+
     public AccountTransactionsResult accountTransactionsResult(Address address){
         return xrpClientService.accountTransactionsResult(address);
     }
 
-    public String checkBalance(Address classicAddress) throws JsonRpcClientErrorException {
-        return xrpClientService.checkBalance(classicAddress);
+    public String checkBalance(Address classicAddress, String tag) throws JsonRpcClientErrorException {
+        return xrpClientService.checkBalance(classicAddress, tag);
     }
 
     public SetRegularKey getRegularKey(Wallet wallet){

@@ -1,13 +1,25 @@
 spring:
   datasource:
-    url: jdbc:mysql://d-rds02-m.cxskmjj18ljm.ap-northeast-2.rds.amazonaws.com:3306/?useUnicode=true&autoReconnect=true&useSSL=false&characterEncoding=utf8&allowMultiQueries=true&serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true
-    username: dbadmin
-    password: Coinbit#dba12~!
     driver-class-name: com.mysql.cj.jdbc.Driver
+    master:
+      url: jdbc:mysql://d-rds02-m.cxskmjj18ljm.ap-northeast-2.rds.amazonaws.com:3306/?useUnicode=true&autoReconnect=true&useSSL=false&characterEncoding=utf8&allowMultiQueries=true&serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true
+      username: dbadmin
+      password: Coinbit#dba12~!
+    slave:
+      url: jdbc:mysql://d-rds02-s.cxskmjj18ljm.ap-northeast-2.rds.amazonaws.com:3306/?useUnicode=true&autoReconnect=true&useSSL=false&characterEncoding=utf8&allowMultiQueries=true&serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true
+      username: dbadmin
+      password: Coinbit#dba12~!
   mvc:
     view:
       suffix: .jsp
       prefix: /WEB-INF/jsp/
+  jpa:
+    open-in-view: false
+    database: mysql
+    show-sql: true
+    hibernate:
+      ddl-auto: create-drop
+      use-new-id-generator-mappings: false
 
 xrp:
   url: http://172.27.3.182:51234/
@@ -16,6 +28,8 @@ xrp:
 crypto:
   ip: http://172.27.3.61
   port: 9050
+security:
+  option: upsign
 
 logging:
   config: classpath:config/log4j2-dev.xml

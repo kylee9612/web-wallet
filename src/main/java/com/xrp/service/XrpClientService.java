@@ -3,12 +3,16 @@ package com.xrp.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.primitives.UnsignedInteger;
 import com.google.common.primitives.UnsignedLong;
+import com.xrp.dao.master.XrpAccountRepo;
+import com.xrp.model.vo.XrpAccount;
 import com.xrp.util.XrpRequestParamUtil;
 import okhttp3.HttpUrl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.xrpl.xrpl4j.client.JsonRpcClientErrorException;
 import org.xrpl.xrpl4j.client.XrplClient;
 import org.xrpl.xrpl4j.client.faucet.FaucetClient;
@@ -39,6 +43,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Service
+@Transactional
 public class XrpClientService {
     private static final Logger log = LogManager.getLogger(XrpClientService.class);
 
@@ -47,6 +52,9 @@ public class XrpClientService {
     private String url;
     @Value("${xrp.test}")
     private boolean isTest;
+
+    @Autowired
+    private XrpAccountRepo xrpAccountRepo;
 
     private XrplClient xrplClient;
     private FaucetClient faucetClient;
@@ -98,6 +106,11 @@ public class XrpClientService {
         } else {
             log.error("Faucet is not valid on live server");
         }
+    }
+
+    public String checkBalance(Address classicAddress, String tag){
+        XrpAccount account = xrpAccountRepo.findFirstByAddressAndDestination(classicAddress.toString(),Integer.parseInt(tag)).orElseThrow();
+        return account.getBalance().toString();
     }
 
     public String checkBalance(Address classicAddress) throws JsonRpcClientErrorException {
