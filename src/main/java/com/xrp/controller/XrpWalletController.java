@@ -57,7 +57,7 @@ public class XrpWalletController {
         return xrpWalletService.getWallet(publicKey,privateKey);
     }
 
-    public JSONObject getWalletInfoWithBalance(Wallet wallet, String tag) throws JsonRpcClientErrorException {
+    public JSONObject getWalletInfoWithBalance(Wallet wallet, int tag) throws JsonRpcClientErrorException {
         JSONObject object = getWalletInfo(wallet);
         String balance = xrpController.checkBalance(wallet.classicAddress(), tag);
         object.put("balance",balance);

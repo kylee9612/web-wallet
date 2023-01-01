@@ -38,16 +38,22 @@ public class MainController {
         Wallet wallet = xrpWalletController.generateWallet();
         return xrpWalletController.getWalletInfo(wallet);
     }
+
     @GetMapping("/newUser")
-    public JSONObject newUser(){
+    public JSONObject newUser() {
         log.info("New User");
         User user = userController.generateUser();
-        XrpAccount xrpAccount = xrpController.generateAccount(user);
         JSONObject object = new JSONObject();
-        object.put("mb_idx",xrpAccount.getMb_idx());
-        object.put("address",xrpAccount.getAddress());
-        object.put("destination tag",xrpAccount.getDestination());
-        object.put("balance",xrpAccount.getBalance());
+        try {
+            XrpAccount xrpAccount = xrpController.generateAccount(user);
+            object.put("mb_idx", xrpAccount.getMb_idx());
+            object.put("address", xrpAccount.getAddress());
+            object.put("destination tag", xrpAccount.getDestination());
+            object.put("balance", xrpAccount.getBalance());
+        }catch (Exception e){
+           log.error(e.getMessage());
+           object.put("Error","Faucet Error");
+        }
         return object;
     }
 
@@ -55,7 +61,7 @@ public class MainController {
     public JSONObject getWallet(@RequestBody HashMap<String, Object> request) throws JsonRpcClientErrorException {
         String publicKey = request.get("publicKey").toString();
         String privateKey = request.get("privateKey").toString();
-        String tag = request.get("tag").toString();
+        int tag = Integer.parseInt(request.get("tag").toString());
         Wallet wallet = xrpWalletController.getWallet(publicKey, privateKey);
         JSONObject object = xrpWalletController.getWalletInfoWithBalance(wallet, tag);
         FeeResult fee = xrpController.getFee();
@@ -76,14 +82,14 @@ public class MainController {
     }
 
     @GetMapping("/fundFaucet")
-    public String fundFaucet(@RequestParam("address") String address, @RequestParam("tag") String tag) throws Exception {
+    public String fundFaucet(@RequestParam("address") String address, @RequestParam("tag") int tag) throws Exception {
         Address address1 = Address.builder().value(address).build();
         xrpController.fundFaucet(address1, tag);
         return xrpController.checkBalance(address1, tag);
     }
 
     @GetMapping("/balance")
-    public String getBalance(@RequestParam("address") String address, @RequestParam("tag") String tag) throws JsonRpcClientErrorException {
+    public String getBalance(@RequestParam("address") String address, @RequestParam("tag") int tag) throws JsonRpcClientErrorException {
         log.info("address : " + address + " checked balance");
         return xrpController.checkBalance(Address.of(address), tag);
     }
@@ -93,7 +99,7 @@ public class MainController {
         String publicKey = map.get("publicKey").toString();
         String privateKey = map.get("privateKey").toString();
         String toAddress = map.get("address").toString();
-        String toTag = map.get("to_tag").toString();
+        int toTag = Integer.parseInt(map.get("to_tag").toString());
         BigDecimal amount = BigDecimal.valueOf(Double.parseDouble(map.get("amount").toString()));
         Wallet wallet = xrpWalletController.getWallet(publicKey, privateKey);
         xrpController.sendXRP(wallet, toAddress, toTag, amount);

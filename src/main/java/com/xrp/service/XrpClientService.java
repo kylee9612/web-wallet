@@ -111,8 +111,8 @@ public class XrpClientService {
         }
     }
 
-    public String checkBalance(Address classicAddress, String tag) {
-        XrpAccount account = xrpAccountRepo.findFirstByAddressAndDestination(classicAddress.toString(), Integer.parseInt(tag)).orElseThrow();
+    public String checkBalance(Address classicAddress, int tag) {
+        XrpAccount account = xrpAccountRepo.findFirstByAddressAndDestination(classicAddress.toString(), tag).orElseThrow();
         return account.getBalance().toString();
     }
 
@@ -161,7 +161,7 @@ public class XrpClientService {
         return xrplClient.fee();
     }
 
-    public void sendXRP(Wallet testWallet, String addressTo, String tag, BigDecimal bigAmount) throws JsonRpcClientErrorException, JsonProcessingException, InterruptedException {
+    public void sendXRP(Wallet testWallet, String addressTo, int tag, BigDecimal bigAmount) throws JsonRpcClientErrorException, JsonProcessingException, InterruptedException {
         Address classicAddress = testWallet.classicAddress();
 
         AccountInfoRequestParams requestParams = paramUtil.getAccountInfoRequest(classicAddress);

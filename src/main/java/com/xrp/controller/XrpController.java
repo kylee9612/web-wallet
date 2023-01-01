@@ -50,19 +50,18 @@ public class XrpController extends Thread {
         xrpClientService.fundFaucet(classicAddress);
     }
 
-    public void fundFaucet(Address classicAddress, String tag) throws Exception {
+    public void fundFaucet(Address classicAddress, int tag) throws Exception {
         String address = classicAddress.toString();
-        int destination = Integer.parseInt(tag);
         xrpClientService.fundFaucet(classicAddress);
         XrpAccount account = xrpAccountRepo
-                .findFirstByAddressAndDestination(address, destination)
+                .findFirstByAddressAndDestination(address, tag)
                 .orElseThrow();
         BigDecimal balance = BigDecimal.valueOf(Double.parseDouble(xrpClientService.checkBalance(classicAddress, tag)) + 1000);
         account.setBalance(balance);
         xrpAccountRepo.save(account);
     }
 
-    public XrpAccount generateAccount(User user){
+    public XrpAccount generateAccount(User user) throws Exception {
         return xrpAccountService.generateAccount(user.getMb_idx());
     }
 
@@ -70,7 +69,7 @@ public class XrpController extends Thread {
         return xrpClientService.accountTransactionsResult(address);
     }
 
-    public String checkBalance(Address classicAddress, String tag) throws JsonRpcClientErrorException {
+    public String checkBalance(Address classicAddress, int tag) throws JsonRpcClientErrorException {
         return xrpClientService.checkBalance(classicAddress, tag);
     }
 
@@ -78,7 +77,7 @@ public class XrpController extends Thread {
         return xrpClientService.getRegularKey(wallet);
     }
 
-    public void sendXRP(Wallet testWallet, String addressTo, String tag, BigDecimal amount) throws JsonRpcClientErrorException, JsonProcessingException, InterruptedException {
+    public void sendXRP(Wallet testWallet, String addressTo, int tag, BigDecimal amount) throws JsonRpcClientErrorException, JsonProcessingException, InterruptedException {
         xrpClientService.sendXRP(testWallet, addressTo, tag, amount);
     }
 
