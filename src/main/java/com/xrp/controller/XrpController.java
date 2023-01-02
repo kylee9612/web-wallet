@@ -50,7 +50,7 @@ public class XrpController extends Thread {
         xrpClientService.fundFaucet(classicAddress);
     }
 
-    public void fundFaucet(Address classicAddress, int tag) throws Exception {
+    public void fundFaucet(Address classicAddress, int tag){
         String address = classicAddress.toString();
         xrpClientService.fundFaucet(classicAddress);
         XrpAccount account = xrpAccountRepo
@@ -93,7 +93,4 @@ public class XrpController extends Thread {
         return xrpWalletService.getAccountInfoRequest(classicAddress);
     }
 
-    private boolean validateWallet(Wallet wallet) {
-        return true;
-    }
 }

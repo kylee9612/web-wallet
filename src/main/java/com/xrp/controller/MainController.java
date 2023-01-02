@@ -3,6 +3,7 @@ package com.xrp.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.xrp.model.vo.User;
 import com.xrp.model.vo.XrpAccount;
+import com.xrp.util.BtcUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -20,7 +21,7 @@ import java.util.HashMap;
 
 @RestController
 @Transactional
-@RequestMapping(value = "api/v2/xrp")
+@RequestMapping(value = "api/v2")
 public class MainController {
     private static final Logger log = LogManager.getLogger(MainController.class);
 
@@ -30,13 +31,22 @@ public class MainController {
     private XrpWalletController xrpWalletController;
 
     @Autowired
+    private BtcController btcController;
+
+    @Autowired
     private UserController userController;
 
-    @GetMapping("/generate")
-    public JSONObject newWallet() {
-        log.info("New Wallet");
+    @GetMapping("/xrp/generate")
+    public JSONObject xrpNewWallet() {
+        log.info("XRP New Wallet");
         Wallet wallet = xrpWalletController.generateWallet();
         return xrpWalletController.getWalletInfo(wallet);
+    }
+    @GetMapping("/btc/generate")
+    public JSONObject btcNewWallet(){
+        log.info("BTC New Wallet");
+        org.bitcoinj.wallet.Wallet wallet = btcController.generateWallet();
+        return BtcUtil.getWallet(wallet);
     }
 
     @GetMapping("/newUser")
@@ -57,8 +67,8 @@ public class MainController {
         return object;
     }
 
-    @PostMapping("/wallet")
-    public JSONObject getWallet(@RequestBody HashMap<String, Object> request) throws JsonRpcClientErrorException {
+    @PostMapping("/xrp/wallet")
+    public JSONObject getXrpWallet(@RequestBody HashMap<String, Object> request) throws JsonRpcClientErrorException {
         String publicKey = request.get("publicKey").toString();
         String privateKey = request.get("privateKey").toString();
         int tag = Integer.parseInt(request.get("tag").toString());
@@ -71,30 +81,30 @@ public class MainController {
     }
 
 
-    @GetMapping("/serverInfo")
+    @GetMapping("/xrp/serverInfo")
     public String serverInfo() {
         return xrpController.getInfo().toString();
     }
 
-    @GetMapping("/checkServer")
+    @GetMapping("/xrp/checkServer")
     public String checkServer() {
         return xrpController.checkServer();
     }
 
-    @GetMapping("/fundFaucet")
+    @GetMapping("/xrp/fundFaucet")
     public String fundFaucet(@RequestParam("address") String address, @RequestParam("tag") int tag) throws Exception {
         Address address1 = Address.builder().value(address).build();
         xrpController.fundFaucet(address1, tag);
         return xrpController.checkBalance(address1, tag);
     }
 
-    @GetMapping("/balance")
+    @GetMapping("/xrp/balance")
     public String getBalance(@RequestParam("address") String address, @RequestParam("tag") int tag) throws JsonRpcClientErrorException {
         log.info("address : " + address + " checked balance");
         return xrpController.checkBalance(Address.of(address), tag);
     }
 
-    @PostMapping("/send")
+    @PostMapping("/xrp/send")
     public JSONObject send(@RequestBody HashMap<String, Object> map) throws JsonRpcClientErrorException, JsonProcessingException, InterruptedException {
         String publicKey = map.get("publicKey").toString();
         String privateKey = map.get("privateKey").toString();
@@ -109,8 +119,8 @@ public class MainController {
         return object;
     }
 
-    @GetMapping("/accountInfo")
-    public JSONObject accountInfo(@RequestParam String address) throws JsonRpcClientErrorException {
+    @GetMapping("/xrp/accountInfo")
+    public JSONObject xrpAccountInfo(@RequestParam String address) throws JsonRpcClientErrorException {
         AccountInfoResult result = xrpController.getAccountInfo(xrpController.getAccountInfoRequest(Address.of(address)));
         JSONObject object = new JSONObject();
         object.put("Transaction ID", result.accountData().accountTransactionId());

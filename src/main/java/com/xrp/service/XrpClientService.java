@@ -166,8 +166,8 @@ public class XrpClientService {
 
         AccountInfoRequestParams requestParams = paramUtil.getAccountInfoRequest(classicAddress);
         AccountInfoResult accountInfoResult = getAccountInfo(requestParams);
-        final UnsignedInteger sequence = accountInfoResult.accountData().sequence();
 
+        final UnsignedInteger sequence = accountInfoResult.accountData().sequence();
         final FeeResult feeResult = xrplClient.fee();
         final XrpCurrencyAmount openLedgerFee = feeResult.drops().openLedgerFee();
 
@@ -180,15 +180,29 @@ public class XrpClientService {
                 validatedLedger.plus(UnsignedInteger.valueOf(6)).unsignedIntegerValue().intValue()
         ); // <-- LastLedgerSequence is the current ledger index + 4
 
-        Payment payment = Payment.builder()
-                .account(classicAddress)
-                .amount(XrpCurrencyAmount.ofXrp(bigAmount))
-                .destination(Address.of(addressTo))
-                .sequence(sequence)
-                .fee(openLedgerFee)
-                .signingPublicKey(testWallet.publicKey())
-                .lastLedgerSequence(lastLedgerSequence)
-                .build();
+        Payment payment;
+        if (tag == 0) {
+            payment = Payment.builder()
+                    .account(classicAddress)
+                    .amount(XrpCurrencyAmount.ofXrp(bigAmount))
+                    .destination(Address.of(addressTo))
+                    .sequence(sequence)
+                    .fee(openLedgerFee)
+                    .signingPublicKey(testWallet.publicKey())
+                    .lastLedgerSequence(lastLedgerSequence)
+                    .build();
+        }else{
+            payment = Payment.builder()
+                    .account(classicAddress)
+                    .amount(XrpCurrencyAmount.ofXrp(bigAmount))
+                    .destination(Address.of(addressTo))
+                    .sequence(sequence)
+                    .fee(openLedgerFee)
+                    .destinationTag(UnsignedInteger.valueOf(tag))
+                    .signingPublicKey(testWallet.publicKey())
+                    .lastLedgerSequence(lastLedgerSequence)
+                    .build();
+        }
         log.info("Constructed Payment: " + payment);
 
         // Construct a SignatureService to sign the Payment
@@ -201,11 +215,28 @@ public class XrpClientService {
 
         // Submit the Payment
         final SubmitResult<Transaction> submitResult = xrplClient.submit(signedPayment);
-        System.out.println(submitResult);
+        log.info("Submit Result: "+submitResult);
 
         // Wait for validation
-        TransactionResult<Payment> transactionResult = null;
+        TransactionResult<Payment> transactionResult = validateTransaction(signedPayment,lastLedgerSequence);
 
+        // Check transaction results
+        log.info(transactionResult);
+        if (isTest) {
+            log.info("Explorer link: https://testnet.xrpl.org/transactions/" + signedPayment.hash());
+        } else {
+            log.info("Explorer link: https://livenet.xrpl.org/transactions/" + signedPayment.hash());
+        }
+        transactionResult.metadata().ifPresent(metadata -> {
+            log.info("Result code: " + metadata.transactionResult());
+            metadata.deliveredAmount().ifPresent(deliveredAmount ->
+                    log.info("XRP Delivered: " + ((XrpCurrencyAmount) deliveredAmount).toXrp())
+            );
+        });
+    }
+
+    private TransactionResult<Payment> validateTransaction(SignedTransaction<Payment> signedPayment, UnsignedInteger lastLedgerSequence) throws InterruptedException, JsonRpcClientErrorException {
+        TransactionResult<Payment> transactionResult = null;
         boolean transactionValidated = false;
         boolean transactionExpired = false;
         while (!transactionValidated && !transactionExpired) {
@@ -218,8 +249,7 @@ public class XrpClientService {
 
             transactionResult = xrplClient.transaction(
                     TransactionRequestParams.of(signedPayment.hash()),
-                    Payment.class
-            );
+                    Payment.class);
 
             if (transactionResult.validated()) {
                 log.info("Payment was validated with result code " + transactionResult.metadata().get().transactionResult());
@@ -233,21 +263,10 @@ public class XrpClientService {
                             transactionResult);
                     transactionExpired = true;
                 } else {
-                    System.out.println("Payment not yet validated.");
+                    log.info("Payment not yet validated.");
                 }
             }
         }
-
-        // Check transaction results
-        log.info(transactionResult);
-        if (isTest) {
-            log.info("Explorer link: https://testnet.xrpl.org/transactions/" + signedPayment.hash());
-        }
-        transactionResult.metadata().ifPresent(metadata -> {
-            log.info("Result code: " + metadata.transactionResult());
-            metadata.deliveredAmount().ifPresent(deliveredAmount ->
-                    log.info("XRP Delivered: " + ((XrpCurrencyAmount) deliveredAmount).toXrp())
-            );
-        });
+        return transactionResult;
     }
 }

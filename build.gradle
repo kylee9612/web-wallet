@@ -61,6 +61,8 @@ dependencies {
     // https://mvnrepository.com/artifact/com.googlecode.json-simple/json-simple
     implementation 'com.googlecode.json-simple:json-simple:1.1.1'
     implementation 'org.springframework.boot:spring-boot-starter-log4j2'
+// https://mvnrepository.com/artifact/org.bitcoinj/bitcoinj-core
+    implementation group: 'org.bitcoinj', name: 'bitcoinj-core', version: '0.16.2'
 
     implementation files("libs/cryptobridge-1.2.jar")
 

@@ -22,7 +22,7 @@ public class XrpAccountService {
     private XrpAccountSlaveRepo xrpAccountSlaveRepo;
 
     @Autowired
-    private XrpController xrpController;
+    private XrpClientService xrpClientService;
 
     @Value("${xrp.test}")
     private boolean isTest;
@@ -38,7 +38,7 @@ public class XrpAccountService {
         }
         BigDecimal balance = isTest ? BigDecimal.valueOf(1000) : BigDecimal.ZERO;
         if(isTest)
-            xrpController.fundFaucet(Address.of(""), tag);
+            xrpClientService.fundFaucet(Address.of(""));
         XrpAccount account = new XrpAccount(mbIdx,"",tag, balance);
         log.info(account+"");
         return account;
