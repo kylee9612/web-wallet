@@ -18,11 +18,11 @@ spring:
     database: mysql
     show-sql: true
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
       use-new-id-generator-mappings: false
 
 xrp:
-  url: http://15.165.156.20:51234/
+  url: http://127.0.0.1:51234/
   test: true
 
 crypto:
