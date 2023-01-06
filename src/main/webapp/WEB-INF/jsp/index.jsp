@@ -51,6 +51,14 @@
             <button id="to_valid_button" onclick="to_valid()" class="in_body">Check Valid</button>
             <input type="text" id="to_valid" class="in_small" readonly="readonly"/>
         </label>
+        <h2>User</h2>
+        <label for="user_tag">Destination
+            <input type="text" id="user_tag" class="in_body" readonly>
+        </label>
+        <label for="user_idx">Index
+            <input type="text" id="user_idx" class="in_body" readonly>
+        </label>
+        <button id="user_generate" onclick="user_generate()" class="in_body">User Generate</button>
     </div>
 </div>
 <%@include file="../include/footer.jsp" %>

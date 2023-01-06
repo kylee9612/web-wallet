@@ -2,13 +2,16 @@ package com.axia.xrp.task;
 
 import com.axia.common.task.AbstractDemonTask;
 import com.axia.xrp.service.XrpClientService;
+import com.google.common.primitives.UnsignedInteger;
 import com.google.common.primitives.UnsignedLong;
 import okhttp3.HttpUrl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.xrpl.xrpl4j.client.JsonRpcClientErrorException;
 import org.xrpl.xrpl4j.client.XrplClient;
+import org.xrpl.xrpl4j.model.client.common.LedgerIndex;
 import org.xrpl.xrpl4j.model.client.common.LedgerSpecifier;
 import org.xrpl.xrpl4j.model.client.ledger.LedgerRequestParams;
 import org.xrpl.xrpl4j.model.client.ledger.LedgerResult;
@@ -26,6 +29,8 @@ public class XrpReceiveTask extends AbstractDemonTask {
 
     private final static Logger log = LogManager.getLogger(XrpReceiveTask.class);
 
+    private static UnsignedInteger lastLedgerIndex = UnsignedInteger.valueOf(0);
+
     private XrplClient xrplClient;
 
 
@@ -42,19 +47,27 @@ public class XrpReceiveTask extends AbstractDemonTask {
             LedgerResult result = xrplClient.ledger(
                     LedgerRequestParams.builder()
                             .ledgerSpecifier(LedgerSpecifier.VALIDATED)
+                            .transactions(true)
                             .build());
-            log.info(result);
+            UnsignedInteger ledgerIndex = result.ledgerIndex().get().unsignedIntegerValue();
+            lastLedgerIndex = lastLedgerIndex.equals(UnsignedInteger.ZERO) ? ledgerIndex : lastLedgerIndex;
+            if (ledgerIndex.compareTo(lastLedgerIndex) == 1) {
+                lastLedgerIndex = ledgerIndex;
+                log.info("Ledger Index : " + result.ledger().ledgerIndex());
 
-//            TransactionResult transactionResult = getTransactionResult(TransactionRequestParams.of(result.ledger().ledgerHash().get()));
-//            log.info(transactionResult);
-            LedgerHeader header = result.ledger();
-            List<TransactionResult<? extends Transaction>> transactions = header.transactions();
-            for (TransactionResult tr : transactions) {
-                Transaction transaction = tr.transaction();
-                log.info("TxID" + transaction.accountTransactionId().get());
-                log.info("Account From : " + transaction.account());
-                log.info("Tag : " + transaction.sourceTag());
-                log.info("Tx : " + transaction);
+                LedgerHeader header = result.ledger();
+                List<TransactionResult<? extends Transaction>> transactions = header.transactions();
+                for (TransactionResult tr : transactions) {
+                    if (tr.transaction() instanceof Payment payment) {
+                        log.info(payment);
+                        log.info("Tx Hash : " + payment.hash());
+                        log.info("Destination : " + payment.destination());
+                        log.info("Account From : " + payment.account());
+                        log.info("Amount :" + payment.amount());
+                        log.info("Tag : " + payment.destinationTag());
+                        log.info("Source Tag : " + payment.sourceTag());
+                    }
+                }
             }
             try {
                 Thread.sleep(1000);
@@ -64,15 +77,14 @@ public class XrpReceiveTask extends AbstractDemonTask {
         }
     }
 
-    private TransactionResult getTransactionResult(TransactionRequestParams params) {
-        try {
-            Thread.sleep(1000);
-            return xrplClient.transaction(params, Transaction.class);
-        } catch (Exception e) {
-            log.error(e.getMessage());
-            log.error(params.transaction());
-            return getTransactionResult(params);
-        }
+    private LedgerResult getLedgerResult(LedgerIndex index) throws JsonRpcClientErrorException, InterruptedException {
+        Thread.sleep(1000);
+        return xrplClient.ledger(
+                LedgerRequestParams
+                        .builder()
+                        .ledgerSpecifier(LedgerSpecifier.of(index))
+                        .transactions(true)
+                        .build());
     }
 
     @Override

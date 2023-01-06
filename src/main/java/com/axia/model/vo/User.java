@@ -16,5 +16,5 @@ import javax.persistence.Table;
 public class User {
 
     @Id
-    private long mb_idx;
+    private int mb_idx;
 }

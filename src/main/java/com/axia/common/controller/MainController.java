@@ -52,16 +52,16 @@ public class MainController {
         return BtcUtil.getWallet(wallet);
     }
 
-    @GetMapping("/newUser")
+    @GetMapping("/user/generate")
     public JSONObject newUser() {
         log.info("New User");
         User user = userController.generateUser();
         JSONObject object = new JSONObject();
         try {
             XrpAccount xrpAccount = xrpController.generateAccount(user);
-            object.put("mb_idx", xrpAccount.getMb_idx());
+            object.put("mb_idx", user.getMb_idx());
             object.put("address", xrpAccount.getAddress());
-            object.put("destination tag", xrpAccount.getDestination());
+            object.put("destination", xrpAccount.getDestination());
             object.put("balance", xrpAccount.getBalance());
         }catch (Exception e){
            log.error(e.getMessage());

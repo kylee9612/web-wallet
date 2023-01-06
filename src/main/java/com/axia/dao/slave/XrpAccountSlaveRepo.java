@@ -7,6 +7,6 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface XrpAccountSlaveRepo extends JpaRepository<XrpAccount, Long> {
+public interface XrpAccountSlaveRepo extends JpaRepository<XrpAccount, Integer> {
     Optional<XrpAccount> findByDestination(int destination);
 }

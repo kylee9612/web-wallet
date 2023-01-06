@@ -20,12 +20,12 @@ import java.math.BigDecimal;
 public class XrpAccount {
 
     @Id
-    private long mb_idx;
+    private int mb_idx;
 
     @Column
     private String address;
     @Column
-    private long destination;
+    private int destination;
 
     @Column
     private BigDecimal balance;

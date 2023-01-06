@@ -26,19 +26,19 @@ public class XrpAccountService {
     @Value("${xrp.test}")
     private boolean isTest;
 
-    public XrpAccount getXrpAccount(long mbIdx){
+    public XrpAccount getXrpAccount(int mbIdx){
         return xrpAccountSlaveRepo.findById(mbIdx).orElse(null);
     }
 
-    public XrpAccount generateAccount(long mbIdx) throws Exception {
+    public XrpAccount generateAccount(int mbIdx) throws Exception {
         int tag = (int) (Math.random()*1000000);
         while(xrpAccountSlaveRepo.findByDestination(tag).isPresent()){
             tag = (int) (Math.random()*1000000);
         }
         BigDecimal balance = isTest ? BigDecimal.valueOf(1000) : BigDecimal.ZERO;
         if(isTest)
-            xrpClientService.fundFaucet(Address.of(""));
-        XrpAccount account = new XrpAccount(mbIdx,"",tag, balance);
+            xrpClientService.fundFaucet(Address.of("r39xAucmVr3bwEhrsKem6L5MLN1ELJSPzU"));
+        XrpAccount account = new XrpAccount(mbIdx,"r39xAucmVr3bwEhrsKem6L5MLN1ELJSPzU",tag, balance);
         log.info(account+"");
         return account;
     }

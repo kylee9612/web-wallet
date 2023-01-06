@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface XrpAccountRepo extends JpaRepository<XrpAccount, Long> {
+public interface XrpAccountRepo extends JpaRepository<XrpAccount, Integer> {
     Optional<XrpAccount> findFirstByAddressAndDestination(@NonNull String address, @NonNull int destination);
 
 }

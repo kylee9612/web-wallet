@@ -15,10 +15,10 @@ public class UserService {
     private UserSlaveRepo userSlaveRepo;
 
     public User generateUser() {
-        long mbIdx = (long) (Math.random() * 1000000);
+        int mbIdx = (int) (Math.random() * 1000000);
         User user;
-        while (userSlaveRepo.findById(mbIdx).isPresent()) {
-            mbIdx = (long) (Math.random() * 1000000);
+        while (userRepo.findById(mbIdx).isPresent()) {
+            mbIdx = (int) (Math.random() * 1000000);
         }
         user = new User(mbIdx);
         userRepo.save(user);
