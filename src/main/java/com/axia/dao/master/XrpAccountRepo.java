@@ -10,6 +10,7 @@ import java.util.Optional;
 
 @Repository
 public interface XrpAccountRepo extends JpaRepository<XrpAccount, Integer> {
+    Optional<XrpAccount> findByDestination(int destination);
     Optional<XrpAccount> findFirstByAddressAndDestination(@NonNull String address, @NonNull int destination);
 
 }

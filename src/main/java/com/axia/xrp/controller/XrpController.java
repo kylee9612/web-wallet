@@ -1,5 +1,6 @@
 package com.axia.xrp.controller;
 
+import com.axia.common.controller.AbstractController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.axia.dao.master.XrpAccountRepo;
 import com.axia.model.vo.User;
@@ -26,7 +27,7 @@ import java.util.Map;
 
 @Controller
 @Transactional
-public class XrpController extends Thread {
+public class XrpController{
 
     private static final Logger log = LogManager.getLogger(XrpController.class);
 
@@ -38,6 +39,7 @@ public class XrpController extends Thread {
     private XrpWalletService xrpWalletService;
     @Autowired
     private XrpAccountService xrpAccountService;
+
 
     public String checkServer() {
         return xrpClientService.checkServer();
@@ -93,5 +95,4 @@ public class XrpController extends Thread {
     public AccountInfoRequestParams getAccountInfoRequest(Address classicAddress) {
         return xrpWalletService.getAccountInfoRequest(classicAddress);
     }
-
 }

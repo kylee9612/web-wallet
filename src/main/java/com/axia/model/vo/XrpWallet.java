@@ -3,6 +3,7 @@ package com.axia.model.vo;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.xrpl.xrpl4j.wallet.Wallet;
 
 import javax.persistence.Column;
@@ -13,6 +14,7 @@ import java.math.BigDecimal;
 
 @Entity
 @Getter
+@Setter
 @Table(name = "xrp_wallet")
 @NoArgsConstructor
 @AllArgsConstructor

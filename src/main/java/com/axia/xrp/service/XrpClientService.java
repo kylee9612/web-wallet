@@ -1,5 +1,7 @@
 package com.axia.xrp.service;
 
+import com.axia.dao.master.XrpWalletRepo;
+import com.axia.xrp.task.XrpBlockTask;
 import com.axia.xrp.task.XrpReceiveTask;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.primitives.UnsignedInteger;
@@ -58,6 +60,8 @@ public class XrpClientService {
     @Autowired
     private XrpAccountRepo xrpAccountRepo;
     @Autowired
+    private XrpWalletRepo xrpWalletRepo;
+    @Autowired
     private UserRepo userRepo;
 
     private XrplClient xrplClient;
@@ -65,12 +69,13 @@ public class XrpClientService {
     private XrpRequestParamUtil paramUtil;
 
     @PostConstruct
-    private void init() {
+    private void init() throws Exception {
         xrplClient = new XrplClient(HttpUrl.get(url));
         faucetClient = FaucetClient.construct(HttpUrl.get("https://faucet.altnet.rippletest.net"));
         paramUtil = new XrpRequestParamUtil();
-        XrpReceiveTask xrpReceiveTask = new XrpReceiveTask(url);
-        xrpReceiveTask.start();
+        String walletAddress = xrpAccountRepo.findById(1).get().getAddress();
+        XrpBlockTask xrpBlockTask = new XrpBlockTask(url,walletAddress,xrpWalletRepo,xrpAccountRepo);
+        xrpBlockTask.start();
     }
 
     public String checkServer() {
