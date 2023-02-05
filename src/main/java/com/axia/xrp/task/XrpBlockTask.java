@@ -3,7 +3,6 @@ package com.axia.xrp.task;
 import com.axia.common.task.AbstractDemonTask;
 import com.axia.dao.master.XrpAccountRepo;
 import com.axia.dao.master.XrpWalletRepo;
-import com.google.common.primitives.UnsignedInteger;
 import okhttp3.HttpUrl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -13,7 +12,6 @@ import org.xrpl.xrpl4j.model.client.ledger.LedgerRequestParams;
 import org.xrpl.xrpl4j.model.client.ledger.LedgerResult;
 import org.xrpl.xrpl4j.model.client.transactions.TransactionResult;
 import org.xrpl.xrpl4j.model.ledger.LedgerHeader;
-import org.xrpl.xrpl4j.model.transactions.Address;
 import org.xrpl.xrpl4j.model.transactions.Payment;
 import org.xrpl.xrpl4j.model.transactions.Transaction;
 
@@ -65,7 +63,7 @@ public class XrpBlockTask extends AbstractDemonTask {
                     log.info("Amount :" + payment.amount());
                     log.info("Tag : " + payment.destinationTag());
                     log.info("Source Tag : " + payment.sourceTag());
-                    if(payment.destination().equals(walletAddress)){
+                    if(payment.destination().toString().equals(walletAddress)){
                         XrpReceiveTask xrpReceiveTask = new XrpReceiveTask(payment,walletAddress,xrpWalletRepo,xrpAccountRepo);
                         xrpReceiveTask.start();
                     }

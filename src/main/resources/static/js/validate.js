@@ -1,3 +1,10 @@
+// import '../css/index.css'
+// import ReactDOM from 'react-dom/client';
+// import App from './App'
+//
+// const root = ReactDOM.createRoot(document.getElementById('rppt'));
+// root.render(<App />)
+
 function generate() {
     $.ajax({
         type: "GET",
@@ -23,7 +30,7 @@ function from_valid() {
     let tag = $("#from_tag").val();
     let type = ""
     let url = ""
-    if (publicKey === null && classicAddress !== null && tag !== null) {
+    if (publicKey === "" && classicAddress !== "" && tag !== "") {
         type = "GET"
         url = "/api/v2/xrp/balance?address=" + classicAddress + "&tag=" + tag
         $.ajax({
@@ -43,7 +50,7 @@ function from_valid() {
                 $("#from_valid").val("false")
             }
         })
-    } else if (publicKey !== null) {
+    } else if (publicKey !== "") {
         let data = {
             "publicKey": publicKey,
             "privateKey": privateKey
@@ -139,7 +146,9 @@ function send() {
         let data = {
             "publicKey": $("#from_public").val(),
             "privateKey": $("#from_private").val(),
+            "from_address" : $("#from_address").val(),
             "address": $("#to_address").val(),
+            "to_tag" : $("#to_tag").val(),
             "amount": $("#amount").val()
         }
         $.ajax({

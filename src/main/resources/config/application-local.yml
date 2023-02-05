@@ -22,7 +22,7 @@ spring:
       use-new-id-generator-mappings: false
 
 xrp:
-  url: http://127.0.0.1:51234/
+  url: http://s.altnet.rippletest.net:51234/
   test: true
 
 crypto:

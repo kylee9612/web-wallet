@@ -1,6 +1,9 @@
 package com.axia.common.controller;
 
 import com.axia.btc.controller.BtcController;
+import com.axia.dao.master.XrpAccountRepo;
+import com.axia.dao.master.XrpWalletRepo;
+import com.axia.model.vo.XrpWallet;
 import com.axia.xrp.controller.XrpController;
 import com.axia.xrp.controller.XrpWalletController;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -38,6 +41,11 @@ public class MainController {
 
     @Autowired
     private UserController userController;
+    @Autowired
+    private XrpAccountRepo xrpAccountRepo;
+
+    @Autowired
+    private XrpWalletRepo xrpWalletRepo;
 
     @GetMapping("/xrp/generate")
     public JSONObject xrpNewWallet() {
@@ -112,12 +120,18 @@ public class MainController {
 
     @PostMapping("/xrp/send")
     public JSONObject send(@RequestBody HashMap<String, Object> map) throws JsonRpcClientErrorException, JsonProcessingException, InterruptedException {
-        String publicKey = map.get("publicKey").toString();
-        String privateKey = map.get("privateKey").toString();
+        Wallet wallet;
+        if(!map.get("publicKey").equals("")){
+            String publicKey = map.get("publicKey").toString();
+            String privateKey = map.get("privateKey").toString();
+            wallet = xrpWalletController.getWallet(publicKey, privateKey);
+        }else{
+            XrpWallet xrpWallet = xrpWalletRepo.findById(map.get("from_address").toString()).get();
+            wallet = xrpWalletController.getWallet(xrpWallet.getPublicKey(),xrpWallet.getPrivateKey());
+        }
         String toAddress = map.get("address").toString();
         int toTag = Integer.parseInt(map.get("to_tag").toString());
         BigDecimal amount = BigDecimal.valueOf(Double.parseDouble(map.get("amount").toString()));
-        Wallet wallet = xrpWalletController.getWallet(publicKey, privateKey);
         xrpController.sendXRP(wallet, toAddress, toTag, amount);
         JSONObject object = xrpWalletController.getWalletInfo(wallet);
         object.put("to_balance", xrpController.checkBalance(Address.of(toAddress), toTag));

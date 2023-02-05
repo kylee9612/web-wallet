@@ -4,7 +4,6 @@ import com.axia.dao.master.XrpAccountRepo;
 import com.axia.dao.master.XrpWalletRepo;
 import com.axia.model.vo.XrpWallet;
 import com.axia.xrp.service.SignService;
-import com.axia.xrp.service.XrpRPCService;
 import com.axia.xrp.service.XrpWalletService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -32,8 +31,6 @@ public class XrpWalletController {
     private XrpWalletService xrpWalletService;
     @Autowired
     private XrpController xrpController;
-    @Autowired
-    private XrpRPCService xrpRPCService;
 
     @Value("${xrp.test}")
     private boolean isTest;

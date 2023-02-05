@@ -2,7 +2,6 @@ package com.axia.xrp.service;
 
 import com.axia.dao.master.XrpWalletRepo;
 import com.axia.xrp.task.XrpBlockTask;
-import com.axia.xrp.task.XrpReceiveTask;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.primitives.UnsignedInteger;
 import com.google.common.primitives.UnsignedLong;
@@ -120,8 +119,16 @@ public class XrpClientService {
     }
 
     public String checkBalance(Address classicAddress, int tag) {
-        XrpAccount account = xrpAccountRepo.findFirstByAddressAndDestination(classicAddress.toString(), tag).orElseThrow();
-        return account.getBalance().toString();
+        if(tag != 0) {
+            XrpAccount account = xrpAccountRepo.findFirstByAddressAndDestination(classicAddress.toString(), tag).get();
+            return account.getBalance().toString();
+        }else{
+            try {
+                return checkBalance(classicAddress);
+            }catch (Exception e){
+                return null;
+            }
+        }
     }
 
     public String checkBalance(Address classicAddress) throws JsonRpcClientErrorException {
@@ -185,7 +192,7 @@ public class XrpClientService {
                 .orElseThrow(() -> new RuntimeException("LedgerIndex not available."));
 
         final UnsignedInteger lastLedgerSequence = UnsignedInteger.valueOf(
-                validatedLedger.plus(UnsignedInteger.valueOf(6)).unsignedIntegerValue().intValue()
+                validatedLedger.plus(UnsignedInteger.valueOf(4)).unsignedIntegerValue().intValue()
         ); // <-- LastLedgerSequence is the current ledger index + 4
 
         Payment payment;

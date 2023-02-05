@@ -4,7 +4,7 @@
     <div id="left-body" class="body_content">
         <h2>From</h2>
         <label for="from_public">Public Key
-            <input type="text" id="from_public" class="in_body" placeholder="publicKey""/>
+            <input type="text" id="from_public" class="in_body" placeholder="publicKey"/>
         </label>
 
         <label for="from_private">Private Key
