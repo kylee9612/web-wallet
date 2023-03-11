@@ -1,10 +1,5 @@
-// import '../css/index.css'
-// import ReactDOM from 'react-dom/client';
-// import App from './App'
-//
-// const root = ReactDOM.createRoot(document.getElementById('rppt'));
-// root.render(<App />)
-
+import React from "react"
+import $ from "jquery";
 function generate() {
     $.ajax({
         type: "GET",
@@ -182,3 +177,72 @@ function makeEmpty() {
     $("#from_xAddress").val();
     $("#from_balance").val();
 }
+
+function Body() {
+
+    return (
+        <div id="wrap">
+            <div id="left-body" className="body_content">
+                <h2>From</h2>
+                <label htmlFor="from_public">Public Key
+                    <input type="text" id="from_public" className="in_body" placeholder="publicKey"/>
+                </label>
+                <label htmlFor="from_private">Private Key
+                    <input type="text" id="from_private" className="in_body" placeholder="privateKey"/>
+                </label>
+
+                <label htmlFor="from_address">Classic Address
+                    <input type="text" id="from_address" className="in_body" placeholder="classicAddress"/>
+                </label>
+
+                <label htmlFor="from_tag">Destination Tag
+                    <input type="text" id="from_tag" className="in_body" placeholder="Destination Tag"/>
+                </label>
+
+                <label htmlFor="from_balance">balance
+                    <input type="text" id="from_balance" className="in_body" readOnly="readonly"/>
+                </label>
+                <label htmlFor="from_valid">
+                    <button id="from_valid_button" onClick={from_valid} className="in_body">Check Valid</button>
+                    <input type="text" id="from_valid" className="in_small" readOnly="readonly"/>
+                </label>
+                <label htmlFor="amount">Sending Amount
+                    <input type="text" id="amount" className="small"/>
+                    Transaction Fee
+                    <input type="text" id="fee" className="small" readOnly="readonly" placeholder="Fee"/>
+                </label>
+                <label>
+                    <button id="generate" onClick={generate} className="in_body">Generate Wallet</button>
+                    <button id="send" onClick={send} className="in_body">Send</button>
+                </label>
+            </div>
+            <div id="right-body" className="body_content">
+                <h2>To</h2>
+                <label htmlFor="to_address">Classic Address
+                    <input type="text" id="to_address" className="in_body" placeholder="classicAddress"/>
+                </label>
+                <label htmlFor="to_tag">Destination Tag
+                    <input type="text" id="to_tag" className="in_body" placeholder="Destination Tag"/>
+                </label>
+                <label htmlFor="to_balance">balance
+                    <input type="text" id="to_balance" className="in_body" readOnly="readonly"/>
+                </label>
+                <label htmlFor="to_valid">
+                    <button id="to_valid_button" onClick={to_valid} className="in_body">Check Valid</button>
+                    <input type="text" id="to_valid" className="in_small" readOnly="readonly"/>
+                </label>
+                <h2>User</h2>
+                <label htmlFor="user_tag">Destination
+                    <input type="text" id="user_tag" className="in_body" readOnly/>
+                </label>
+                <label htmlFor="user_idx">Index
+                    <input type="text" id="user_idx" className="in_body" readOnly/>
+                </label>
+                <button id="user_generate" onClick={user_generate}
+                        className="in_body">User Generate</button>
+            </div>
+        </div>
+    )
+}
+
+export default Body;

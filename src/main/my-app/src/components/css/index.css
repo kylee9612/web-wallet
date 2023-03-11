@@ -1,9 +1,6 @@
-#nav{
-    height: 100px;
-    text-align: center;
-}
-#nav h1{
-    font-size: 70px;
+a{
+    text-decoration-line: none;
+    color: black;
 }
 
 #wrap{
@@ -29,6 +26,9 @@
 }
 
 button.in_body{
+    border-radius: 1em;
+    border : rgba(250,248,173,0) 1px;
+    background-color: rgb(144 232 255 / 35%);
     width: 200px;
     height: 40px;
 }

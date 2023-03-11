@@ -1,0 +1,38 @@
+#nav{
+    background-color: rgb(192 221 255 / 35%);;
+    padding : 0 5em;
+    height: 100px;
+    text-align: center;
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content : space-around;
+    align-items: center;
+}
+
+#coin{
+    list-style-type: none;
+    display: flex;
+}
+
+#coin li{
+    padding : 1em 0;
+    margin : 0 2em;
+    font-weight: bold;
+    font-size : 20px;
+    height: 100%;
+    width: 6em;
+    border-radius: 1em;
+    background-color: rgb(200 205 255 / 95%);
+}
+
+#logo{
+    padding : 1em 0;
+    margin : 1em 2em;
+    height: auto;
+    width: 5em;
+    align-items: center;
+    background-color: rgb(200 205 255 / 95%);
+    border-radius: 1em;
+    font-weight: bold;
+    font-size: 20px;
+}

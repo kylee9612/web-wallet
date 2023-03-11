@@ -1,3 +1,4 @@
+
 plugins {
     id 'java'
     id 'war'
@@ -68,6 +69,51 @@ dependencies {
 
 }
 
+def frontDir = "$projectDir/src/main/my-app"
+
+sourceSets {
+    main {
+        resources {
+            srcDirs = ["$projectDir/src/main/resources"]
+        }
+    }
+}
+
+processResources {
+    dependsOn "copyReactBuildFiles"
+}
+
+tasks.register('installReact', Exec) {
+    workingDir "$frontDir"
+    inputs.dir "$frontDir"
+    group = BasePlugin.BUILD_GROUP
+    if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
+        commandLine "npm.cmd", "audit", "fix"
+        commandLine 'npm.cmd', 'install'
+    } else {
+        commandLine "npm", "audit", "fix"
+        commandLine 'npm', 'install'
+    }
+}
+
+tasks.register('buildReact', Exec) {
+    dependsOn "installReact"
+    workingDir "$frontDir"
+    inputs.dir "$frontDir"
+    group = BasePlugin.BUILD_GROUP
+    if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
+        commandLine "npm.cmd", "run-script", "build"
+    } else {
+        commandLine "npm", "run-script", "build"
+    }
+}
+
+tasks.register('copyReactBuildFiles', Copy) {
+    dependsOn "buildReact"
+    from "$frontDir/build"
+    into "$buildDir/resources/main/static"
+}
+
 tasks.named('test') {
     useJUnitPlatform()
 }
@@ -80,4 +126,8 @@ tasks.named('bootBuildImage') {
 bootRun {
     String activeProfile = System.properties['spring.profiles.active']
     systemProperty "spring.profiles.active", activeProfile
+}
+
+tasks.bootWar {
+    dependsOn "copyReactBuildFiles"
 }

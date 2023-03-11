@@ -1,4 +1,5 @@
 <%@include file="../include/header.jsp" %>
+<div id="root"></div>
 
 <div id="wrap">
     <div id="left-body" class="body_content">
