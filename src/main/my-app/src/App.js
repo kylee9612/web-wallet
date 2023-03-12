@@ -1,15 +1,16 @@
-import React, {useEffect, useState} from 'react';
-import axios from 'axios';
-import Main from "./components/page/js/main";
+import React from 'react';
 import "./components/css/index.css"
+import Header from "./components/page/js/common/header";
+import Body from "./components/page/js/xrp/body";
+import Footer from "./components/page/js/common/footer";
 
 function App() {
-  const [hello, setHello] = useState('')
 
   return (
-      <div>
-        <Main/>
-        {/*백엔드에서 가져온 데이터입니다 : {hello}*/}
+      <div id={"inner_root"}>
+          <Header/>
+          <Body/>
+          <Footer/>
       </div>
   );
 }

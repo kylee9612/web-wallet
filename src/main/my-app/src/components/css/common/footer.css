@@ -1,0 +1,8 @@
+#footer{
+    background-color: aliceblue;
+    text-align: center;
+    justify-content: center;
+    height: 8vh;
+    display: flex;
+    align-items: center;
+}

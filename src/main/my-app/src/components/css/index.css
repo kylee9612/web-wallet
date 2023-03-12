@@ -5,13 +5,11 @@ a{
 
 #wrap{
     display: flex;
-    min-width: 99%;
-    min-height: 80%;
     justify-content: center;
 }
 
 .body_content{
-    margin: 20px;
+    margin: 4em;
     min-width: 40%;
     max-width: 50%;
     min-height: 100%;
@@ -31,7 +29,13 @@ button.in_body{
     background-color: rgb(144 232 255 / 35%);
     width: 200px;
     height: 40px;
+    transition:background-color 1s, transform 1s;
 }
+button.in_body:hover{
+    transition:background-color 1s, transform 1s;
+    background-color: rgba(109, 205, 243, 0.58);
+}
+
 input.in_small{
     width: 80px;
     height: 40px;
@@ -47,13 +51,18 @@ input.small{
     height: 40px;
 }
 
-footer{
-    min-height: 8%;
-    text-align: center;
-}
 label{
     display: flex;
     width: 70%;
     align-items: center;
     justify-content: space-between;
+}
+
+html,body{
+    height: 100vh;
+    font-family: "Noto Sans";
+}
+
+#inner_root, #root{
+    height: 100vh;
 }
