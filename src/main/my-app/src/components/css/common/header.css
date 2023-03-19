@@ -1,11 +1,13 @@
 #nav{
-    background-color: rgb(192 221 255 / 35%);;
-    padding : 0 5em;
+    background-color: rgb(228 240 255);
     height: 100px;
+    min-width: 100%;
     text-align: center;
     display: flex;
     justify-content : space-between;
     align-items: center;
+    box-shadow: 1px 1px 10px 2px #000000;
+    position: absolute;
 }
 
 #coin{

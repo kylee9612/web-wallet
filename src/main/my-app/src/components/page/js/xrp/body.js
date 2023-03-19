@@ -1,4 +1,4 @@
-import React from "react"
+import React ,{useState} from "react"
 import $ from "jquery";
 function generate() {
     $.ajax({
@@ -178,7 +178,7 @@ function makeEmpty() {
     $("#from_balance").val();
 }
 
-function Body() {
+function Body(prop) {
 
     return (
         <div id="wrap">
