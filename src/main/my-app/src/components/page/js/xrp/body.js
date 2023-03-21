@@ -232,7 +232,7 @@ function Body(prop) {
                     <input type="text" id="to_valid" className="in_small" readOnly="readonly"/>
                 </label>
                 <h2>User</h2>
-                <label htmlFor="user_tag">Destination
+                <label htmlFor="user_tag">Memo (Destination)
                     <input type="text" id="user_tag" className="in_body" readOnly/>
                 </label>
                 <label htmlFor="user_idx">Index

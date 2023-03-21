@@ -1,19 +1,23 @@
 import React from 'react';
 import "./components/css/index.css"
 import Header from "./components/page/js/common/header";
-import Body from "./components/page/js/xrp/body";
-import Footer from "./components/page/js/common/footer";
+import {useState} from "react";
 import Deposit from "./components/page/js/xrp/deposit";
 
 function App() {
+    const [Coin, setCoin] = useState("");
 
-  return (
-      <div id={"inner_root"}>
-          <Header/>
-          <Deposit coin={"xrp"}/>
-          {/*<Footer/>*/}
-      </div>
-  );
+    const changeCoin = (coinTo)=>{
+        setCoin(coinTo)
+    }
+
+    return (
+        <div id={"inner_root"}>
+            <Header onChangeCoin={changeCoin}/>
+            <Deposit coin={Coin}/>
+            {/*<Footer/>*/}
+        </div>
+    );
 }
 
 export default App;

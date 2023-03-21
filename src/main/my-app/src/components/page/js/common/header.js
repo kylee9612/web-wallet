@@ -1,7 +1,12 @@
 import React from "react"
 import "../../../css/common/header.css"
 
-function Header() {
+function Header(props) {
+    const onClickCoin = (coin) =>{
+        console.log(coin)
+        return props.onChangeCoin(coin)
+    }
+
     return (
         <div id="nav">
             <div id="logo">
@@ -13,10 +18,9 @@ function Header() {
                 <div className="dropdown">
                     <button className="dropbtn">Coin List</button>
                     <div className="dropdown-content">
-                        <a href="#"><img
-                            src={'https://s2.coinmarketcap.com/static/img/coins/64x64/1.png'}/><span>BTC</span></a>
-                        <a href="#"><img src={'https://s2.coinmarketcap.com/static/img/coins/64x64/1027.png'}/>ETH</a>
-                        <a href="#"><img src={'https://s2.coinmarketcap.com/static/img/coins/64x64/52.png'}/>XRP</a>
+                        <li onClick={onClickCoin('BTC')}><img src={'https://s2.coinmarketcap.com/static/img/coins/64x64/1.png'}/><span>BTC</span></li>
+                        <li onClick={onClickCoin('ETH')}><img src={'https://s2.coinmarketcap.com/static/img/coins/64x64/1027.png'}/>ETH</li>
+                        <li onClick={onClickCoin('XRP')}><img src={'https://s2.coinmarketcap.com/static/img/coins/64x64/52.png'}/>XRP</li>
                     </div>
                 </div>
                 <div className={"login"}>

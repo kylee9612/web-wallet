@@ -85,6 +85,7 @@ function from_valid() {
 }
 
 function Deposit(prop) {
+    console.log(prop)
 
     return (
         <div id="wrap">
