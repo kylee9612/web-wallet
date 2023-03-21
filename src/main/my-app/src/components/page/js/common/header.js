@@ -5,7 +5,7 @@ function Header() {
     return (
         <div id="nav">
             <div id="logo">
-                <a href={"/"} className={"logo_text"} c>
+                <a href={"/"} className={"logo_text"}>
                     Rallet
                 </a>
             </div>

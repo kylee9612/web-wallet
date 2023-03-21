@@ -88,6 +88,14 @@ function Deposit(prop) {
 
     return (
         <div id="wrap">
+            <div className="page-bg"></div>
+
+            <div className="animation-wrapper">
+                <div className="particle particle-1"></div>
+                <div className="particle particle-2"></div>
+                <div className="particle particle-3"></div>
+                <div className="particle particle-4"></div>
+            </div>
             <div id="left-body" className="body_content">
                 <h2>{prop.coin}</h2>
                 <label htmlFor="from_public">Public Key
