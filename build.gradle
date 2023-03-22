@@ -46,13 +46,13 @@ dependencies {
     // https://mvnrepository.com/artifact/org.apache.tomcat.embed/tomcat-embed-jasper
     implementation 'org.apache.tomcat.embed:tomcat-embed-jasper:9.0.58'
 
+    implementation 'org.xrpl:xrpl4j-address-codec:2.5.1'
     implementation 'org.xrpl:xrpl4j-crypto-parent:2.5.1'
+    implementation 'org.xrpl:xrpl4j-binary-codec:2.5.1'
     implementation 'org.xrpl:xrpl4j-crypto-core:2.5.1'
     implementation 'org.xrpl:xrpl4j-client:2.5.1'
     implementation 'org.xrpl:xrpl4j-bom:2.5.1'
-    implementation 'org.xrpl:xrpl4j-binary-codec:2.5.1'
     implementation 'org.xrpl:xrpl4j-keypairs:2.5.1'
-    implementation 'org.xrpl:xrpl4j-address-codec:2.5.1'
     implementation 'org.xrpl:xrpl4j-crypto-bouncycastle:2.5.1'
     // https://mvnrepository.com/artifact/org.immutables/value
     compileOnly group: 'org.immutables', name: 'value', version: '2.9.2'
@@ -77,41 +77,41 @@ sourceSets {
         }
     }
 }
-
-processResources {
-    dependsOn "copyReactBuildFiles"
-}
-
-tasks.register('installReact', Exec) {
-    workingDir "$frontDir"
-    inputs.dir "$frontDir"
-    group = BasePlugin.BUILD_GROUP
-    if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
-        commandLine "npm.cmd", "audit", "fix"
-        commandLine 'npm.cmd', 'install'
-    } else {
-        commandLine "npm", "audit", "fix"
-        commandLine 'npm', 'install'
-    }
-}
-
-tasks.register('buildReact', Exec) {
-    dependsOn "installReact"
-    workingDir "$frontDir"
-    inputs.dir "$frontDir"
-    group = BasePlugin.BUILD_GROUP
-    if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
-        commandLine "npm.cmd", "run-script", "build"
-    } else {
-        commandLine "npm", "run-script", "build"
-    }
-}
-
-tasks.register('copyReactBuildFiles', Copy) {
-    dependsOn "buildReact"
-    from "$frontDir/build"
-    into "$buildDir/resources/main/static"
-}
+//
+//processResources {
+//    dependsOn "copyReactBuildFiles"
+//}
+//
+//tasks.register('installReact', Exec) {
+//    workingDir "$frontDir"
+//    inputs.dir "$frontDir"
+//    group = BasePlugin.BUILD_GROUP
+//    if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
+//        commandLine "npm.cmd", "audit", "fix"
+//        commandLine 'npm.cmd', 'install'
+//    } else {
+//        commandLine "npm", "audit", "fix"
+//        commandLine 'npm', 'install'
+//    }
+//}
+//
+//tasks.register('buildReact', Exec) {
+//    dependsOn "installReact"
+//    workingDir "$frontDir"
+//    inputs.dir "$frontDir"
+//    group = BasePlugin.BUILD_GROUP
+//    if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
+//        commandLine "npm.cmd", "run-script", "build"
+//    } else {
+//        commandLine "npm", "run-script", "build"
+//    }
+//}
+//
+//tasks.register('copyReactBuildFiles', Copy) {
+//    dependsOn "buildReact"
+//    from "$frontDir/build"
+//    into "$buildDir/resources/main/static"
+//}
 
 tasks.named('test') {
     useJUnitPlatform()

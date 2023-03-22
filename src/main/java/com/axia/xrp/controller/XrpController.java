@@ -13,6 +13,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RestController;
 import org.xrpl.xrpl4j.client.JsonRpcClientErrorException;
 import org.xrpl.xrpl4j.model.client.accounts.AccountInfoRequestParams;
 import org.xrpl.xrpl4j.model.client.accounts.AccountInfoResult;
@@ -25,7 +26,7 @@ import javax.annotation.PostConstruct;
 import java.math.BigDecimal;
 import java.util.Map;
 
-@Controller
+@RestController
 @Transactional
 public class XrpController{
 
@@ -40,10 +41,6 @@ public class XrpController{
     @Autowired
     private XrpAccountService xrpAccountService;
 
-
-    public String checkServer() {
-        return xrpClientService.checkServer();
-    }
 
     public Map<String, Object> getInfo() {
         return xrpClientService.getInfo();

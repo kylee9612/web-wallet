@@ -1,21 +1,6 @@
-import React ,{useState} from "react"
+import React, {useState} from "react"
 import $ from "jquery";
-function generate() {
-    $.ajax({
-        type: "GET",
-        url: "/api/v2/xrp/generate",
-        success: function (data) {
-            $("#from_public").val(data.publicKey);
-            $("#from_private").val(data.privateKey);
-            $("#from_address").val(data.classicAddress);
-            $("#from_tag").val(data.tag);
-        },
-        error: function (error) {
-            console.log(error)
-            alert("Generating Error")
-        }
-    })
-}
+import axios from "axios";
 
 function from_valid() {
     let publicKey = $("#from_public").val();
@@ -85,7 +70,22 @@ function from_valid() {
 }
 
 function Deposit(prop) {
-    console.log(prop)
+        // $.ajax({
+        //     type: "GET",
+        //     url: "/api/v2/xrp/generate",
+        //     success: function (data) {
+        //         $("#from_public").val(data.publicKey);
+        //         $("#from_private").val(data.privateKey);
+        //         $("#from_address").val(data.classicAddress);
+        //         $("#from_tag").val(data.tag);
+        //     },
+        //     error: function (error) {
+        //         console.log(error)
+        //         alert("Generating Error")
+        //     }
+        // })
+    // }
+
 
     return (
         <div id="wrap">
@@ -122,7 +122,7 @@ function Deposit(prop) {
                     <input type="text" id="from_valid" className="in_small" readOnly="readonly"/>
                 </label>
                 <label>
-                    <button id="generate" onClick={generate} className="in_body">Generate Wallet</button>
+                    <button id="generate" onClick={prop.generate} className="in_body">Generate Wallet</button>
                 </label>
             </div>
         </div>

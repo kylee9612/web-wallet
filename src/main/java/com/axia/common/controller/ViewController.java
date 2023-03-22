@@ -6,14 +6,14 @@ import org.springframework.web.servlet.ModelAndView;
 
 @Controller
 public class ViewController {
-
-    @RequestMapping("/")
-    public ModelAndView mainPage(){
-        return new ModelAndView("index");
-    }
-
-    @RequestMapping("/index")
-    public ModelAndView index(){
-        return mainPage();
-    }
+//
+//    @RequestMapping("/")
+//    public ModelAndView mainPage(){
+//        return new ModelAndView("index");
+//    }
+//
+//    @RequestMapping("/index")
+//    public ModelAndView index(){
+//        return mainPage();
+//    }
 }
