@@ -25,6 +25,9 @@ xrp:
   url: http://s.altnet.rippletest.net:51234/
   test: true
 
+coin:
+  test: true
+
 crypto:
   ip: http://127.0.0.1
   port: 9050
