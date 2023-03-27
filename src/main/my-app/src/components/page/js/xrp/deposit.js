@@ -107,7 +107,7 @@ function Deposit(prop) {
                     <input type="text" id="from_valid" className="in_small" readOnly="readonly"/>
                 </label>
                 <label>
-                    <button id="generate" onClick={generate} className="in_body">Generate Wallet</button>
+                    <button id="generate" onClick={prop.generate} className="in_body">Generate Wallet</button>
                 </label>
             </div>
         </div>
