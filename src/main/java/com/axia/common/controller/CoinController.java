@@ -1,19 +1,17 @@
 package com.axia.common.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.RestController;
-
 import java.math.BigDecimal;
 import java.util.Map;
-
-@RestController
 public abstract class CoinController {
 
-    @Value("${coin.test}")
-    protected boolean isTest;
+    /**
+     * TODO
+     * Main Coin Controller 생성하여,
+     * mapping url 분석 후,
+     * 하위 컨트롤러에 전달 기능 추가
+     * */
 
-    public abstract Object newWallet();
+    public abstract Map<String, Object> generate();
     public abstract Map<String, Object> getWallet(String privateKey);
     public abstract String deriveAddress(String publicKey);
     public abstract String derivePublicKey(String privateKey);
