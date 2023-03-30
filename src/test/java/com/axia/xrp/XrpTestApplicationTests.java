@@ -1,4 +1,4 @@
-package com.axia.xrptest;
+package com.axia.xrp;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
