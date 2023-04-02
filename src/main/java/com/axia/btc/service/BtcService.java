@@ -1,60 +1,83 @@
 package com.axia.btc.service;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bitcoinj.core.*;
 import org.bitcoinj.crypto.TransactionSignature;
+import org.bitcoinj.kits.WalletAppKit;
+import org.bitcoinj.net.discovery.DnsDiscovery;
 import org.bitcoinj.params.MainNetParams;
 import org.bitcoinj.script.Script;
 import org.bitcoinj.script.ScriptBuilder;
 import org.bitcoinj.store.BlockStoreException;
 import org.bitcoinj.store.MemoryBlockStore;
+import org.bitcoinj.utils.ContextPropagatingThreadFactory;
 import org.bitcoinj.wallet.CoinSelection;
 import org.bitcoinj.wallet.Wallet;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.net.InetAddress;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.concurrent.ExecutionException;
 
 @Service
 public class BtcService {
+
+    private final static Logger log = LogManager.getLogger(BtcService.class);
     @Value("${coin.test}")
     private boolean isTest;
 
+    private final double SATOSHI = 10000000.0;
+
     private NetworkParameters network;
+    private ContextPropagatingThreadFactory threadFactory;
+    private Context context;
 
     @PostConstruct
-    public void getTestnetParam(){
-        if(isTest)
+    public void getTestnetParam() {
+        if (isTest)
             network = MainNetParams.fromID(MainNetParams.ID_TESTNET);
         else
             network = MainNetParams.fromID(MainNetParams.ID_MAINNET);
+        threadFactory = new ContextPropagatingThreadFactory("BTC_Service");
+        context = new Context(network);
     }
 
-    public Wallet generateWallet(){
+    public Wallet generateWallet() {
         return Wallet.createDeterministic(network, Script.ScriptType.P2WPKH);
     }
 
-    public Transaction createRawTransaction(Wallet wallet, Address destination, long value, Address changeAddress) throws InsufficientMoneyException {
-        // Create a new empty transaction
+    public Wallet getWallet(ECKey key) {
+        Wallet wallet = Wallet.createBasic(network);
+        wallet.importKey(key);
+        return wallet;
+    }
+
+    public Map<String, Object> walletFromPrivateKey(ECKey key) {
+        Map<String, Object> walletMap = new HashMap<>();
+        walletMap.put("private_key", key.getPrivateKeyAsHex());
+        walletMap.put("public_key", key.getPublicKeyAsHex());
+        String address = Address.fromKey(network, key, Script.ScriptType.P2WPKH).toString();
+        walletMap.put("address", address);
+        return walletMap;
+    }
+
+    public Transaction createRawTransaction(ECKey key, String toAddress, long value) {
         Transaction tx = new Transaction(network);
-        ECKey key = ECKey.fromPrivate(Objects.requireNonNull(wallet.getActiveKeyChain().getRootKey()).getPrivKey());
 
-        // Calculate the total amount of coins to be sent
+        Wallet wallet = getWallet(key);
+        Address changeAddress = Address.fromKey(network, key, Script.ScriptType.P2WPKH);
+        Address destination = Address.fromString(network, toAddress);
+
         Coin totalAmount = Coin.valueOf(value);
-
-        // Add the output to send coins to the destination address
         tx.addOutput(totalAmount, destination);
-
-        // Calculate the amount of change to be returned to the change address
         Coin changeAmount = Coin.ZERO;
-
-        // Calculate the total value of inputs required for the transaction
         Coin inputValue = totalAmount;
-
-        // If there is change to be returned, add an output to the change address
         if (changeAmount.isGreaterThan(Coin.ZERO)) {
             tx.addOutput(changeAmount, changeAddress);
             inputValue = inputValue.add(changeAmount);
@@ -63,32 +86,21 @@ public class BtcService {
         // Select the UTXOs to spend for the transaction
         List<TransactionOutput> spendableOutputs = wallet.calculateAllSpendCandidates();
         CoinSelection coinSelection = wallet.getCoinSelector().select(Coin.valueOf(inputValue.value), spendableOutputs);
-        List<TransactionInput> inputs = coinSelection.gathered;
+        Collection<TransactionOutput> inputs = coinSelection.gathered;
 
         // Add the inputs to the transaction
-        for (TransactionInput input : inputs) {
+        for (TransactionOutput input : inputs) {
             tx.addInput(input);
-        }
-
-        // Sign the inputs
-        for (int i = 0; i < inputs.size(); i++) {
-            TransactionInput input = tx.getInput(i);
-            Script scriptPubKey = input.getConnectedOutput().getScriptPubKey();
-            ECKey.ECDSASignature signature = key.sign(input.getConnectedOutput().getValue(), key.getPrivKeyBytes(), true);
-            TransactionSignature txSignature = new TransactionSignature(signature, Transaction.SigHash.ALL, false);
-            Script inputScript = ScriptBuilder.createInputScript(txSignature, key);
-            input.setScriptSig(inputScript);
         }
 
         return tx;
     }
 
-    public void signTransaction(NetworkParameters params, Transaction tx, ECKey key) {
+    public void signTransaction(Transaction tx, ECKey key) {
         // Sign the inputs
         for (int i = 0; i < tx.getInputs().size(); i++) {
             TransactionInput input = tx.getInput(i);
-            Script scriptPubKey = input.getConnectedOutput().getScriptPubKey();
-            ECKey.ECDSASignature signature = key.sign(input.getConnectedOutput().getValue(), key.getPrivKeyBytes(), true);
+            ECKey.ECDSASignature signature = key.sign(input.getHash());
             TransactionSignature txSignature = new TransactionSignature(signature, Transaction.SigHash.ALL, false);
             Script inputScript = ScriptBuilder.createInputScript(txSignature, key);
             input.setScriptSig(inputScript);
@@ -96,16 +108,54 @@ public class BtcService {
     }
 
 
-
-    public void broadcastTransaction( Transaction tx) throws IOException, BlockStoreException {
+    public void broadcastTransaction(Transaction tx) throws IOException, BlockStoreException, ExecutionException, InterruptedException {
         // Connect to a Bitcoin node
         BlockChain chain = new BlockChain(network, new MemoryBlockStore(network));
         PeerGroup peerGroup = new PeerGroup(network, chain);
-        peerGroup.addAddress(new PeerAddress(network,InetAddress.getLocalHost()));
+        peerGroup.addAddress(new PeerAddress(network, InetAddress.getLocalHost()));
         peerGroup.start();
         peerGroup.waitForPeers(1).get();
 
         // Broadcast the transaction to the network
-        peerGroup.broadcastTransaction(tx).get();
+        TransactionBroadcast broadcast = peerGroup.broadcastTransaction(tx);
+        log.info("Transaction Sent ::: " + broadcast);
+    }
+
+    public BigDecimal getBalance(String adr) {
+        Context.propagate(context);
+        Address address = Address.fromString(network, adr);
+        Wallet wallet = Wallet.createBasic(network);
+
+        String filePrefix = "peer2-testnet";
+        WalletAppKit kit = new WalletAppKit(network, new File("."), filePrefix);
+        // Download the block chain and wait until it's done.
+        BlockChain blockChain;
+        try{
+            blockChain = new BlockChain(context, new MemoryBlockStore(network));
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        kit.startAsync();
+        kit.awaitRunning();
+        wallet.addWatchedAddress(address, 0);
+        System.out.println("wallet.getWatchedAddresses()" + wallet.getWatchedAddresses());
+        BlockChain chain;
+        try {
+            chain = new BlockChain(network, wallet,
+                    new MemoryBlockStore(network));
+
+            PeerGroup peerGroup = new PeerGroup(network, chain);
+            peerGroup.addPeerDiscovery(new DnsDiscovery(network));
+            peerGroup.addWallet(wallet);
+            peerGroup.start();
+            peerGroup.downloadBlockChain();
+            Coin balance = wallet.getBalance();
+            System.out.println("Wallet balance: " + balance);
+            return balance.toBtc();
+        } catch (BlockStoreException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return null;
+        }
     }
 }

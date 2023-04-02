@@ -6,6 +6,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bitcoinj.core.Address;
 import org.bitcoinj.core.ECKey;
+import org.bitcoinj.core.Transaction;
 import org.bitcoinj.core.Utils;
 import org.bitcoinj.params.MainNetParams;
 import org.bitcoinj.script.Script;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -26,30 +28,24 @@ public class BTCController extends CoinController {
 
     @Autowired
     private BtcService btcService;
+
     @Override
     @GetMapping("/generate")
     public Map<String, Object> generate() {
         Wallet wallet = btcService.generateWallet();
-        Map<String, Object> walletMap = new HashMap<>();
-        ECKey key = ECKey.fromPrivate(Objects.requireNonNull(wallet.getActiveKeyChain().getRootKey()).getPrivKey());
-        walletMap.put("Private Key", key.getPrivateKeyAsHex());
-        walletMap.put("Public Key", key.getPublicKeyAsHex());
-        String address = Address.fromKey(MainNetParams.fromID(MainNetParams.ID_TESTNET),key, Script.ScriptType.P2WPKH).toString();
-        walletMap.put("Address", address);
-        log.info("BTC Address Generated ::: "+address);
+        BigInteger privateKey = Objects.requireNonNull(wallet.getActiveKeyChain().getRootKey()).getPrivKey();
+        ECKey key = ECKey.fromPrivate(privateKey);
+        Map<String, Object> walletMap = btcService.walletFromPrivateKey(key);
+        log.info("BTC Address Generated ::: " + walletMap.get("address"));
         return walletMap;
     }
 
     @Override
     @PostMapping("/wallet")
     public Map<String, Object> getWallet(@RequestParam("privateKey") String privateKey) {
-        Map<String, Object> walletMap = new HashMap<>();
         ECKey key = ECKey.fromPrivate(Utils.HEX.decode(privateKey));
-        walletMap.put("Private Key", key.getPrivateKeyAsHex());
-        walletMap.put("Public Key", key.getPublicKeyAsHex());
-        String address = Address.fromKey(MainNetParams.fromID(MainNetParams.ID_TESTNET),key, Script.ScriptType.P2WPKH).toString();
-        walletMap.put("Address", address);
-        log.info("BTC Address Formed ::: "+address);
+        Map<String, Object> walletMap = btcService.walletFromPrivateKey(key);
+        log.info("BTC Address Formed ::: " + walletMap.get("address"));
         return walletMap;
     }
 
@@ -60,10 +56,10 @@ public class BTCController extends CoinController {
      * public key 에서 address 추출
      * private key 에서 public key 추출
      * ECKey 사용
-     * */
+     */
     @Override
     @PostMapping("/address")
-    public String deriveAddress(@RequestParam("publicKey")String publicKey) {
+    public String deriveAddress(@RequestParam("publicKey") String publicKey) {
         return null;
     }
 
@@ -79,12 +75,21 @@ public class BTCController extends CoinController {
      * TODO
      * private key 로  raw transaction 생성 및,
      * transaction sign 기능 추가
-     * */
+     */
 
     @Override
     @PostMapping("/send")
-    public Map<String, Object> sendToAddress(String privateKey, String toAddress, BigDecimal amount) {
-        return null;
+    public Map<String, Object> sendToAddress(@RequestParam("privateKey") String privateKey,
+                                             @RequestParam("toAddress") String toAddress,
+                                             @RequestParam("amount") BigDecimal amount) throws Exception{
+        ECKey key = ECKey.fromPrivate(Utils.HEX.decode(privateKey));
+        long sendAmount = amount.multiply(BigDecimal.valueOf(10000000)).longValue();
+        Transaction rawTransaction = btcService.createRawTransaction(key, toAddress, sendAmount);
+        btcService.signTransaction(rawTransaction, key);
+        btcService.broadcastTransaction(rawTransaction);
+        Map<String, Object> rtnMap = checkBalance(toAddress);
+        rtnMap.put("transaction", rawTransaction);
+        return rtnMap;
     }
 
     /**
@@ -92,11 +97,14 @@ public class BTCController extends CoinController {
      * TODO
      * UTXO list 불러옴과 같이,
      * 잔액 총 합 return
-     * */
+     */
 
     @Override
     @PostMapping("/balance")
-    public Map<String, Object> checkBalance(String address) {
-        return null;
+    public Map<String, Object> checkBalance(@RequestParam("address") String address) {
+        BigDecimal balance = btcService.getBalance(address);
+        HashMap<String,Object> map = new HashMap<>();
+        map.put("balance",balance);
+        return map;
     }
 }
