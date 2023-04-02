@@ -21,6 +21,7 @@ import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
@@ -131,31 +132,21 @@ public class BtcService {
         // Download the block chain and wait until it's done.
         BlockChain blockChain;
         try{
-            blockChain = new BlockChain(context, new MemoryBlockStore(network));
         }catch (Exception e){
             e.printStackTrace();
         }
+        wallet.addWatchedAddress(address, 0);
         kit.startAsync();
         kit.awaitRunning();
-        wallet.addWatchedAddress(address, 0);
         System.out.println("wallet.getWatchedAddresses()" + wallet.getWatchedAddresses());
-        BlockChain chain;
-        try {
-            chain = new BlockChain(network, wallet,
-                    new MemoryBlockStore(network));
+        return wallet.getBalance().toBtc();
+    }
 
-            PeerGroup peerGroup = new PeerGroup(network, chain);
-            peerGroup.addPeerDiscovery(new DnsDiscovery(network));
-            peerGroup.addWallet(wallet);
-            peerGroup.start();
-            peerGroup.downloadBlockChain();
-            Coin balance = wallet.getBalance();
-            System.out.println("Wallet balance: " + balance);
-            return balance.toBtc();
-        } catch (BlockStoreException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            return null;
-        }
+    public BigDecimal getBalance(ECKey key){
+        Context.propagate(context);
+        Wallet wallet = Wallet.createBasic(network);
+        wallet.importKey(key);
+        log.info(wallet.toString());
+        return wallet.getBalance().toBtc();
     }
 }

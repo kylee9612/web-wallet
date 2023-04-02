@@ -102,6 +102,7 @@ public class BTCController extends CoinController {
     @Override
     @PostMapping("/balance")
     public Map<String, Object> checkBalance(@RequestParam("address") String address) {
+//        ECKey key = ECKey.fromPrivate(Utils.HEX.decode(address));
         BigDecimal balance = btcService.getBalance(address);
         HashMap<String,Object> map = new HashMap<>();
         map.put("balance",balance);
