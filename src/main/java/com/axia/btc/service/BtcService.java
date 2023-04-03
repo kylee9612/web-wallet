@@ -7,6 +7,7 @@ import org.bitcoinj.crypto.TransactionSignature;
 import org.bitcoinj.kits.WalletAppKit;
 import org.bitcoinj.net.discovery.DnsDiscovery;
 import org.bitcoinj.params.MainNetParams;
+import org.bitcoinj.params.TestNet3Params;
 import org.bitcoinj.script.Script;
 import org.bitcoinj.script.ScriptBuilder;
 import org.bitcoinj.store.BlockStoreException;
@@ -36,17 +37,22 @@ public class BtcService {
     private final double SATOSHI = 10000000.0;
 
     private NetworkParameters network;
-    private ContextPropagatingThreadFactory threadFactory;
+
+    private WalletAppKit walletAppKit;
     private Context context;
 
     @PostConstruct
     public void getTestnetParam() {
         if (isTest)
-            network = MainNetParams.fromID(MainNetParams.ID_TESTNET);
+            network = TestNet3Params.get();
         else
-            network = MainNetParams.fromID(MainNetParams.ID_MAINNET);
-        threadFactory = new ContextPropagatingThreadFactory("BTC_Service");
+            network = MainNetParams.get();
         context = new Context(network);
+        walletAppKit = new WalletAppKit(network, Script.ScriptType.P2WPKH,null,new File("."),"peer2-testnet");
+        PeerAddress peer = new PeerAddress(network,"172.27.3.58",8333);
+        walletAppKit.setPeerNodes(peer);
+        walletAppKit.startAsync();
+        walletAppKit.awaitRunning();
     }
 
     public Wallet generateWallet() {
@@ -127,17 +133,9 @@ public class BtcService {
         Address address = Address.fromString(network, adr);
         Wallet wallet = Wallet.createBasic(network);
 
-        String filePrefix = "peer2-testnet";
-        WalletAppKit kit = new WalletAppKit(network, new File("."), filePrefix);
-        // Download the block chain and wait until it's done.
-        BlockChain blockChain;
-        try{
-        }catch (Exception e){
-            e.printStackTrace();
-        }
+//        walletAppKit.startAsync();
+//        walletAppKit.awaitRunning();
         wallet.addWatchedAddress(address, 0);
-        kit.startAsync();
-        kit.awaitRunning();
         System.out.println("wallet.getWatchedAddresses()" + wallet.getWatchedAddresses());
         return wallet.getBalance().toBtc();
     }
