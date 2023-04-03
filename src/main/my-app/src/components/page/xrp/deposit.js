@@ -70,7 +70,9 @@ function from_valid() {
 }
 
 function Deposit(prop) {
-    console.log(prop)
+    const generate = () => {
+        prop.generate()
+    }
 
     return (
         <div id="wrap">
@@ -84,6 +86,7 @@ function Deposit(prop) {
             </div>
             <div id="left-body" className="body_content">
                 <h2>{prop.coin}</h2>
+                <img id={"qr_code"} src={"data:image/png;base64,"+prop.data.qr_code} width={"200px"} height={"200px"}/>
                 <label htmlFor="from_public">Public Key
                     <input type="text" id="from_public" className="in_body" placeholder="publicKey"/>
                 </label>
@@ -107,7 +110,7 @@ function Deposit(prop) {
                     <input type="text" id="from_valid" className="in_small" readOnly="readonly"/>
                 </label>
                 <label>
-                    <button id="generate" onClick={prop.generate} className="in_body">Generate Wallet</button>
+                    <button id="generate" onClick={generate} className="in_body">Generate Wallet</button>
                 </label>
             </div>
         </div>

@@ -65,6 +65,8 @@ dependencies {
 
     implementation files("libs/cryptobridge-1.2.jar")
 
+    implementation 'com.google.zxing:core:3.5.1'
+    implementation 'com.google.zxing:javase:3.5.1'
 }
 
 def frontDir = "$projectDir/src/main/my-app"

@@ -5,6 +5,11 @@ import com.axia.dao.master.XrpWalletRepo;
 import com.axia.model.vo.XrpWallet;
 import com.axia.xrp.service.SignService;
 import com.axia.xrp.service.XrpWalletService;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.MultiFormatWriter;
+import com.google.zxing.WriterException;
+import com.google.zxing.client.j2se.MatrixToImageWriter;
+import com.google.zxing.common.BitMatrix;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bouncycastle.crypto.util.PrivateKeyFactory;
@@ -12,6 +17,8 @@ import org.bouncycastle.crypto.util.PublicKeyFactory;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,7 +34,9 @@ import org.xrpl.xrpl4j.keypairs.KeyPairService;
 import org.xrpl.xrpl4j.wallet.Wallet;
 import org.xrpl.xrpl4j.wallet.WalletFactory;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -53,14 +62,30 @@ public class XrpWalletController {
 
 
     @GetMapping("/api/v2/xrp/generate")
-    public Wallet generateWallet() {
+    public Map<String, Object> generateWallet() throws WriterException {
         Wallet wallet = xrpWalletService.generateWallet();
         if(isTest) {
             xrpController.fundFaucet(wallet.classicAddress());
         }
         XrpWallet xrpWallet = new XrpWallet(wallet);
         xrpWalletRepo.save(xrpWallet);
-        return wallet;
+        Map<String, Object> map = new HashMap<>();
+        map.put("private_key", wallet.privateKey().toString());
+        map.put("public_key", wallet.publicKey());
+        map.put("address",wallet.classicAddress().toString());
+        map.put("destination","12341234");
+        String url = wallet.classicAddress() + " (Destination Tag) "+"1234123412";
+        int width = 200;
+        int height = 200;
+        BitMatrix matrix = new MultiFormatWriter().encode(url, BarcodeFormat.QR_CODE, width, height);
+
+        try (ByteArrayOutputStream out = new ByteArrayOutputStream();) {
+            MatrixToImageWriter.writeToStream(matrix, "PNG", out);
+            map.put("qr_code",out.toByteArray());
+        }catch (Exception e){
+            return null;
+        }
+        return map;
     }
 
 

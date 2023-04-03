@@ -1,13 +1,14 @@
 import React from 'react';
-import "./components/css/index.css"
-import Header from "./components/page/js/common/header";
+import "./App.css"
+import Header from "./components/page/common/header";
 import {useState} from "react";
-import Deposit from "./components/page/js/xrp/deposit";
+import Deposit from "./components/page/xrp/deposit";
 import axios from "axios";
 
 function App() {
     const [Coin, setCoin] = useState("XRP");
     const coinList = ['BTC', 'ETH', 'XRP']
+    const [coinData, setCoinData] = useState({});
 
 
     const changeCoin = (event) => {
@@ -22,12 +23,15 @@ function App() {
     }
 
     const generate = () => {
-        axios.get("/api/v2/xrp/generate")
+        axios.get("/api/v2/"+Coin.toLowerCase()+"/generate")
             .then((response) => {
-                console.log(response.data)
+                setCoinData(response.data)
             })
             .catch((error) => {
                 console.log(error)
+            })
+            .finally(()=>{
+                console.log(coinData)
             })
     }
 
@@ -36,6 +40,7 @@ function App() {
             <Header onChangeCoin={changeCoin}/>
             <Deposit coin={Coin}
                      generate={generate}
+                     data={coinData}
             />
         </div>
     );
