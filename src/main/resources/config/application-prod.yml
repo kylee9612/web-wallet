@@ -16,6 +16,8 @@ xrp:
 crypto:
   ip: http://172.28.9.61
   port: 9050
+security:
+  option: upsign
 
 logging:
   config: classpath:config/log4j2-prod.xml

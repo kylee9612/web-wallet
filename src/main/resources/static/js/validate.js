@@ -25,7 +25,7 @@ function from_valid() {
     let url = ""
     if (publicKey === null && classicAddress !== null && tag !== null) {
         type = "GET"
-        url = "/api/v2/xrp/balance?address=" + classicAddress +"&tag="+tag
+        url = "/api/v2/xrp/balance?address=" + classicAddress + "&tag=" + tag
         $.ajax({
             type: type,
             url: url,
@@ -43,7 +43,7 @@ function from_valid() {
                 $("#from_valid").val("false")
             }
         })
-    } else if (publicKey !== null){
+    } else if (publicKey !== null) {
         let data = {
             "publicKey": publicKey,
             "privateKey": privateKey
@@ -110,6 +110,19 @@ function to_valid() {
     } else if (classicAddress === null || tag === null) {
         alert("지갑 주소와 태그를 확인하세요")
     }
+}
+
+function user_generate() {
+    $.ajax({
+        type: "GET",
+        url: "/api/v2/user/generate",
+        success: function (data) {
+            $("#user_idx").val(data.mb_idx)
+            $("#user_tag").val(data.destination)
+        }, error: function (error) {
+            alert("Generating failed")
+        }
+    })
 }
 
 function send() {
