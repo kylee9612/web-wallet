@@ -26,7 +26,7 @@ xrp:
   test: true
 
 coin:
-  test: false
+  test: true
 
 crypto:
   ip: http://127.0.0.1

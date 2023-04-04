@@ -49,10 +49,10 @@ public class BtcService {
             network = MainNetParams.get();
         context = new Context(network);
         walletAppKit = new WalletAppKit(network, Script.ScriptType.P2WPKH,null,new File("."),"peer2-testnet");
-        PeerAddress peer = new PeerAddress(network,"172.27.3.58",8333);
+        PeerAddress peer = new PeerAddress(network,"192.168.219.101",18333);
         walletAppKit.setPeerNodes(peer);
-        walletAppKit.startAsync();
-        walletAppKit.awaitRunning();
+//        walletAppKit.startAsync();
+//        walletAppKit.awaitRunning();
     }
 
     public Wallet generateWallet() {

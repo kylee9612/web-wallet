@@ -1,7 +1,7 @@
 import React from "react"
 import "./header.css"
 
-function Header(props) {
+function Header({onChangeCoin}) {
 
     return (
         <div id="nav">
@@ -14,9 +14,9 @@ function Header(props) {
                 <div className="dropdown">
                     <button className="dropbtn">Coin List</button>
                     <div className="dropdown-content">
-                        <li onClick={props.onChangeCoin}><img alt={'BTC'} value={0} src={'https://s2.coinmarketcap.com/static/img/coins/64x64/1.png'}/><span>BTC</span></li>
-                        <li onClick={props.onChangeCoin}><img alt={'ETH'} value={1} src={'https://s2.coinmarketcap.com/static/img/coins/64x64/1027.png'}/><span>ETH</span></li>
-                        <li onClick={props.onChangeCoin}><img alt={'XRP'} value={2} src={'https://s2.coinmarketcap.com/static/img/coins/64x64/52.png'}/><span>XRP</span></li>
+                        <li onClick={onChangeCoin}><img alt={'BTC'} value={0} src={'https://s2.coinmarketcap.com/static/img/coins/64x64/1.png'}/><span>BTC</span></li>
+                        <li onClick={onChangeCoin}><img alt={'ETH'} value={1} src={'https://s2.coinmarketcap.com/static/img/coins/64x64/1027.png'}/><span>ETH</span></li>
+                        <li onClick={onChangeCoin}><img alt={'XRP'} value={2} src={'https://s2.coinmarketcap.com/static/img/coins/64x64/52.png'}/><span>XRP</span></li>
                     </div>
                 </div>
                 <div className={"login"}>
