@@ -35,7 +35,7 @@ public class XRPIssueToken{
             throws InterruptedException, JsonRpcClientErrorException, JsonProcessingException {
         // Construct a network client ----------------------------------------------
         HttpUrl rippledUrl = HttpUrl
-                .get("http://localhost:51234/");
+                .get("http://s.altnet.rippletest.net:51234/");
         XrplClient xrplClient = new XrplClient(rippledUrl);
         // Get the current network fee
         FeeResult feeResult = xrplClient.fee();

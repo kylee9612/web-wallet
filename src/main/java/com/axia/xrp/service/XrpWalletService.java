@@ -5,6 +5,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.xrpl.xrpl4j.crypto.BcKeyUtils;
+import org.xrpl.xrpl4j.crypto.PrivateKey;
+import org.xrpl.xrpl4j.crypto.PublicKey;
 import org.xrpl.xrpl4j.keypairs.KeyPair;
 import org.xrpl.xrpl4j.model.client.accounts.AccountInfoRequestParams;
 import org.xrpl.xrpl4j.model.transactions.Address;
@@ -37,8 +40,11 @@ public class XrpWalletService {
         return walletFactory.fromKeyPair(key, isTest);
     }
 
-    public Wallet getWallet(String secretKey) {
-        return walletFactory.fromSeed(secretKey, isTest);
+    public Wallet getWallet(PrivateKey privateKey) {
+        PublicKey publicKey = BcKeyUtils.toPublicKey(privateKey);
+        KeyPair keyPair = getKeyPair(publicKey.base16Encoded(),privateKey.base16Encoded());
+        log.info(keyPair);
+        return walletFactory.fromKeyPair(keyPair,isTest);
     }
 
     public AccountInfoRequestParams getAccountInfoRequest(Address classicAddress) {

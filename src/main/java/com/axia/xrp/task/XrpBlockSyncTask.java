@@ -6,6 +6,7 @@ import com.axia.dao.master.XrpWalletRepo;
 import okhttp3.HttpUrl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xrpl.xrpl4j.client.XrplClient;
 import org.xrpl.xrpl4j.model.client.common.LedgerSpecifier;
 import org.xrpl.xrpl4j.model.client.ledger.LedgerRequestParams;
@@ -17,10 +18,8 @@ import org.xrpl.xrpl4j.model.transactions.Transaction;
 
 import java.util.List;
 
-public class XrpBlockTask extends AbstractDemonTask {
-
-    private static final Logger log = LogManager.getLogger(XrpBlockTask.class);
-
+public class XrpBlockSyncTask extends AbstractDemonTask {
+    private final Logger log = LogManager.getLogger(XrpBlockSyncTask.class);
     private final String clientAddress;
     private final String walletAddress;
     private int lastLedgerIndex;
@@ -30,50 +29,45 @@ public class XrpBlockTask extends AbstractDemonTask {
     private final XrpWalletRepo xrpWalletRepo;
     private final XrpAccountRepo xrpAccountRepo;
 
-    public XrpBlockTask(String url, String walletAddress, XrpWalletRepo xrpWalletRepo, XrpAccountRepo xrpAccountRepo) {
+    public XrpBlockSyncTask(String url, String walletAddress, XrpWalletRepo xrpWalletRepo, XrpAccountRepo xrpAccountRepo, int lastLedgerIndex) {
         this.clientAddress = url;
         this.walletAddress = walletAddress;
         this.xrpWalletRepo = xrpWalletRepo;
         this.xrpAccountRepo = xrpAccountRepo;
+        this.lastLedgerIndex = lastLedgerIndex;
         super.sleepTime = 1000;
     }
 
     @Override
     protected void execute() throws Exception {
         openDBNode();
-        LedgerResult result = xrplClient.ledger(
-                LedgerRequestParams.builder()
-                        .ledgerSpecifier(LedgerSpecifier.VALIDATED)
-                        .transactions(true)
-                        .build());
-        int ledgerIndex = result.ledgerIndex().get().unsignedIntegerValue().intValue();
-        lastLedgerIndex = lastLedgerIndex == 0 ? ledgerIndex : lastLedgerIndex;
-        if (ledgerIndex > lastLedgerIndex) {
-            lastLedgerIndex = ledgerIndex;
-            log.info("Ledger Index : " + result.ledger().ledgerIndex());
+        int currentIndex = 0;
+        while (currentIndex != lastLedgerIndex) {
+            LedgerResult result = xrplClient.ledger(
+                    LedgerRequestParams.builder()
+                            .ledgerSpecifier(LedgerSpecifier.of(currentIndex))
+                            .transactions(true)
+                            .build());
+            log.info("Sync Task Ledger Index : " + result.ledger().ledgerIndex());
 
             LedgerHeader header = result.ledger();
+            currentIndex++;
             List<TransactionResult<? extends Transaction>> transactions = header.transactions();
             for (TransactionResult tr : transactions) {
                 if (tr.transaction() instanceof Payment payment) {
-                    log.info(payment);
-                    log.info("Tx Hash : " + payment.hash());
-                    log.info("Destination : " + payment.destination());
-                    log.info("Account From : " + payment.account());
-                    log.info("Amount :" + payment.amount());
-                    log.info("Tag : " + payment.destinationTag());
-                    log.info("Source Tag : " + payment.sourceTag());
-                    if(payment.destination().toString().equals(walletAddress)){
-                        XrpReceiveTask xrpReceiveTask = new XrpReceiveTask(payment,walletAddress,xrpWalletRepo,xrpAccountRepo);
+                    if (payment.destination().toString().equals(walletAddress)) {
+                        log.info(payment);
+                        log.info("Sync Task Tx Hash : " + payment.hash());
+                        log.info("Sync Task Destination : " + payment.destination());
+                        log.info("Sync Task Account From : " + payment.account());
+                        log.info("Sync Task Amount :" + payment.amount());
+                        log.info("Sync Task Tag : " + payment.destinationTag());
+                        log.info("Sync Task Source Tag : " + payment.sourceTag());
+                        XrpReceiveTask xrpReceiveTask = new XrpReceiveTask(payment, walletAddress, xrpWalletRepo, xrpAccountRepo);
                         xrpReceiveTask.start();
                     }
                 }
             }
-        }
-        try{
-            sleep(1000);
-        }catch (Exception e){
-            log.error(e.getMessage());
         }
     }
 

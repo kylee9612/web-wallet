@@ -2,7 +2,6 @@ package com.axia.xrp.service;
 
 import com.axia.dao.master.XrpWalletRepo;
 import com.axia.xrp.task.XrpBlockTask;
-import com.axia.xrp.task.XrpReceiveTask;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.primitives.UnsignedInteger;
 import com.google.common.primitives.UnsignedLong;
@@ -18,6 +17,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.xrpl.xrpl4j.client.JsonRpcClientErrorException;
+import org.xrpl.xrpl4j.client.JsonRpcRequest;
 import org.xrpl.xrpl4j.client.XrplClient;
 import org.xrpl.xrpl4j.client.faucet.FaucetClient;
 import org.xrpl.xrpl4j.client.faucet.FundAccountRequest;
@@ -26,6 +26,7 @@ import org.xrpl.xrpl4j.crypto.PrivateKey;
 import org.xrpl.xrpl4j.crypto.signing.SignatureService;
 import org.xrpl.xrpl4j.crypto.signing.SignedTransaction;
 import org.xrpl.xrpl4j.crypto.signing.SingleKeySignatureService;
+import org.xrpl.xrpl4j.model.client.XrplRequestParams;
 import org.xrpl.xrpl4j.model.client.accounts.AccountInfoRequestParams;
 import org.xrpl.xrpl4j.model.client.accounts.AccountInfoResult;
 import org.xrpl.xrpl4j.model.client.accounts.AccountTransactionsResult;
@@ -33,7 +34,6 @@ import org.xrpl.xrpl4j.model.client.common.LedgerIndex;
 import org.xrpl.xrpl4j.model.client.common.LedgerSpecifier;
 import org.xrpl.xrpl4j.model.client.fees.FeeResult;
 import org.xrpl.xrpl4j.model.client.ledger.LedgerRequestParams;
-import org.xrpl.xrpl4j.model.client.serverinfo.ServerInfoResult;
 import org.xrpl.xrpl4j.model.client.transactions.SubmitResult;
 import org.xrpl.xrpl4j.model.client.transactions.TransactionRequestParams;
 import org.xrpl.xrpl4j.model.client.transactions.TransactionResult;
@@ -78,23 +78,9 @@ public class XrpClientService {
         xrpBlockTask.start();
     }
 
-    public String checkServer() {
-        ServerInfoResult result = null;
-        try {
-            result = xrplClient.serverInformation();
-            log.info(result.toString());
-            return result.toString();
-        } catch (JsonRpcClientErrorException e) {
-            log.error(e.getMessage());
-            return null;
-        }
-    }
-
-
     public Map<String, Object> getInfo() {
         try {
             Map<String, Object> map = new HashMap<>();
-            map.put("Server Info", xrplClient.serverInformation());
             map.put("Node Fee", xrplClient.fee());
             map.put("JsonRpcClient", xrplClient.getJsonRpcClient());
             log.info(map + "");
@@ -120,8 +106,16 @@ public class XrpClientService {
     }
 
     public String checkBalance(Address classicAddress, int tag) {
-        XrpAccount account = xrpAccountRepo.findFirstByAddressAndDestination(classicAddress.toString(), tag).orElseThrow();
-        return account.getBalance().toString();
+        if(tag != 0) {
+            XrpAccount account = xrpAccountRepo.findFirstByAddressAndDestination(classicAddress.toString(), tag).get();
+            return account.getBalance().toString();
+        }else{
+            try {
+                return checkBalance(classicAddress);
+            }catch (Exception e){
+                return null;
+            }
+        }
     }
 
     public String checkBalance(Address classicAddress) throws JsonRpcClientErrorException {
@@ -185,7 +179,7 @@ public class XrpClientService {
                 .orElseThrow(() -> new RuntimeException("LedgerIndex not available."));
 
         final UnsignedInteger lastLedgerSequence = UnsignedInteger.valueOf(
-                validatedLedger.plus(UnsignedInteger.valueOf(6)).unsignedIntegerValue().intValue()
+                validatedLedger.plus(UnsignedInteger.valueOf(4)).unsignedIntegerValue().intValue()
         ); // <-- LastLedgerSequence is the current ledger index + 4
 
         Payment payment;

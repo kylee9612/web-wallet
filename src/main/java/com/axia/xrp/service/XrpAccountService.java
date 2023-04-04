@@ -14,7 +14,7 @@ import java.math.BigDecimal;
 
 @Service
 public class XrpAccountService {
-    private static Logger log = LoggerFactory.getLogger(XrpAccount.class);
+    private static final Logger log = LoggerFactory.getLogger(XrpAccount.class);
     @Autowired
     private XrpAccountRepo xrpAccountRepo;
     @Autowired
@@ -37,8 +37,9 @@ public class XrpAccountService {
         }
         BigDecimal balance = isTest ? BigDecimal.valueOf(1000) : BigDecimal.ZERO;
         if(isTest)
-            xrpClientService.fundFaucet(Address.of("r39xAucmVr3bwEhrsKem6L5MLN1ELJSPzU"));
-        XrpAccount account = new XrpAccount(mbIdx,"r39xAucmVr3bwEhrsKem6L5MLN1ELJSPzU",tag, balance);
+            xrpClientService.fundFaucet(Address.of("rh1sX1GhPEUhPb9w6JLKV9vANfoXK9YEHd"));
+        XrpAccount account = new XrpAccount(mbIdx,"rh1sX1GhPEUhPb9w6JLKV9vANfoXK9YEHd",tag, balance);
+        xrpAccountRepo.save(account);
         log.info(account+"");
         return account;
     }

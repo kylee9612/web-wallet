@@ -31,7 +31,7 @@ public class PropertyConfig {
     public HibernateProperties hibernateProperties(){
         HibernateProperties hibernateProperties = new HibernateProperties();
         hibernateProperties.setDdlAuto(env.getProperty("spring.jpa.hibernate.ddl-auto"));
-        hibernateProperties.setUseNewIdGeneratorMappings(Boolean.valueOf(env.getProperty("pring.jpa.hibernate.use-new-id-generator-mappings")));
+        hibernateProperties.setUseNewIdGeneratorMappings(Boolean.valueOf(env.getProperty("spring.jpa.hibernate.use-new-id-generator-mappings")));
         return hibernateProperties;
     }
 
