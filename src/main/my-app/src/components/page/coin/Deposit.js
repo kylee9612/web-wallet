@@ -22,7 +22,7 @@ function Deposit({coin}) {
                         "<div class='alert-div'>" +
                         "<span>private key</span>" +
                         "<input type='text' id='from_private' class='alert-input' value='" + response.data.private_key + "'/>" +
-                        "<br><br>" +
+                        "<br>" +
                         "<span>public key</span>" +
                         "<input type='text' id='from_public' class='alert-input' value='" + response.data.public_key + "'/>" +
                         "</div>",
@@ -49,12 +49,6 @@ function Deposit({coin}) {
                          onError={imgError}/>
                     <button ref={genRef} id="generate" onClick={generate} className="in_body">Generate Wallet</button>
                 </div>
-                {/*<label htmlFor="from_public">Public Key*/}
-                {/*    <input type="text" id="from_public" className="in_body" placeholder="publicKey"/>*/}
-                {/*</label>*/}
-                {/*<label htmlFor="from_private">Private Key*/}
-                {/*    <input type="text" id="from_private" className="in_body" placeholder="privateKey"/>*/}
-                {/*</label>*/}
 
                 <label htmlFor="from_address">Classic Address
                     <input type="text" id="from_address" className="in_body" placeholder="Address"

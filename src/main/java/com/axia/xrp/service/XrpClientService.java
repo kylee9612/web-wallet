@@ -17,7 +17,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.xrpl.xrpl4j.client.JsonRpcClientErrorException;
-import org.xrpl.xrpl4j.client.JsonRpcRequest;
 import org.xrpl.xrpl4j.client.XrplClient;
 import org.xrpl.xrpl4j.client.faucet.FaucetClient;
 import org.xrpl.xrpl4j.client.faucet.FundAccountRequest;
@@ -26,7 +25,6 @@ import org.xrpl.xrpl4j.crypto.PrivateKey;
 import org.xrpl.xrpl4j.crypto.signing.SignatureService;
 import org.xrpl.xrpl4j.crypto.signing.SignedTransaction;
 import org.xrpl.xrpl4j.crypto.signing.SingleKeySignatureService;
-import org.xrpl.xrpl4j.model.client.XrplRequestParams;
 import org.xrpl.xrpl4j.model.client.accounts.AccountInfoRequestParams;
 import org.xrpl.xrpl4j.model.client.accounts.AccountInfoResult;
 import org.xrpl.xrpl4j.model.client.accounts.AccountTransactionsResult;
@@ -118,7 +116,7 @@ public class XrpClientService {
         }
     }
 
-    public String checkBalance(Address classicAddress) throws JsonRpcClientErrorException {
+    public String checkBalance(Address classicAddress){
         AccountInfoRequestParams requestParams = paramUtil.getAccountInfoRequest(classicAddress);
         AccountInfoResult accountInfoResult = getAccountInfo(requestParams);
         XrpCurrencyAmount balance = accountInfoResult.accountData().balance();
@@ -126,10 +124,15 @@ public class XrpClientService {
         return accountInfoResult.accountData().balance().toXrp().toString();
     }
 
-    public AccountInfoResult getAccountInfo(AccountInfoRequestParams resultParams) throws JsonRpcClientErrorException {
-        AccountInfoResult result = xrplClient.accountInfo(resultParams);
-        log.info(result.toString());
-        return result;
+    public AccountInfoResult getAccountInfo(AccountInfoRequestParams resultParams){
+        try {
+            AccountInfoResult result = xrplClient.accountInfo(resultParams);
+            log.info(result.toString());
+            return result;
+        }catch (JsonRpcClientErrorException e){
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public AccountTransactionsResult accountTransactionsResult(Address address) {
@@ -163,8 +166,9 @@ public class XrpClientService {
         return xrplClient.fee();
     }
 
-    public void sendXRP(Wallet testWallet, String addressTo, int tag, BigDecimal bigAmount) throws JsonRpcClientErrorException, JsonProcessingException, InterruptedException {
+    public void sendXRP(Wallet testWallet, String addressTo, String memo, BigDecimal bigAmount) throws JsonRpcClientErrorException, JsonProcessingException, InterruptedException {
         Address classicAddress = testWallet.classicAddress();
+        int tag = Integer.parseInt(memo);
 
         AccountInfoRequestParams requestParams = paramUtil.getAccountInfoRequest(classicAddress);
         AccountInfoResult accountInfoResult = getAccountInfo(requestParams);

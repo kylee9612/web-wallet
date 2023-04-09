@@ -81,6 +81,7 @@ public class BTCController extends CoinController {
     @PostMapping("/send")
     public Map<String, Object> sendToAddress(@RequestParam("privateKey") String privateKey,
                                              @RequestParam("toAddress") String toAddress,
+                                             @RequestParam("memo") String memo,
                                              @RequestParam("amount") BigDecimal amount) throws Exception{
         ECKey key = ECKey.fromPrivate(Utils.HEX.decode(privateKey));
         long sendAmount = amount.multiply(BigDecimal.valueOf(10000000)).longValue();

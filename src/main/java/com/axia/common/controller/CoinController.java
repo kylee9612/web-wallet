@@ -15,6 +15,6 @@ public abstract class CoinController {
     public abstract Map<String, Object> getWallet(String privateKey);
     public abstract String deriveAddress(String publicKey);
     public abstract String derivePublicKey(String privateKey);
-    public abstract Map<String, Object> sendToAddress(String privateKey, String toAddress, BigDecimal amount) throws Exception;
+    public abstract Map<String, Object> sendToAddress(String privateKey, String toAddress, String memo, BigDecimal amount) throws Exception;
     public abstract Map<String, Object> checkBalance(String address);
 }

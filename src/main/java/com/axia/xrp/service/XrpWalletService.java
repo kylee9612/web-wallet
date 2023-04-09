@@ -1,19 +1,23 @@
 package com.axia.xrp.service;
 
-import com.axia.xrp.util.XrpRequestParamUtil;
+import com.axia.dao.master.XrpWalletRepo;
+import com.axia.model.vo.XrpWallet;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.xrpl.xrpl4j.crypto.BcKeyUtils;
-import org.xrpl.xrpl4j.crypto.PrivateKey;
-import org.xrpl.xrpl4j.crypto.PublicKey;
+import org.xrpl.xrpl4j.crypto.bc.BcAddressUtils;
+import org.xrpl.xrpl4j.crypto.bc.keys.BcKeyUtils;
+import org.xrpl.xrpl4j.crypto.core.keys.PrivateKey;
+import org.xrpl.xrpl4j.crypto.core.keys.PublicKey;
 import org.xrpl.xrpl4j.keypairs.KeyPair;
-import org.xrpl.xrpl4j.model.client.accounts.AccountInfoRequestParams;
-import org.xrpl.xrpl4j.model.transactions.Address;
 import org.xrpl.xrpl4j.wallet.DefaultWalletFactory;
 import org.xrpl.xrpl4j.wallet.Wallet;
 import org.xrpl.xrpl4j.wallet.WalletFactory;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class XrpWalletService {
@@ -21,33 +25,45 @@ public class XrpWalletService {
 
     @Value("${xrp.test}")
     private boolean isTest;
-    private final XrpRequestParamUtil requestParamUtil = new XrpRequestParamUtil();
+    @Autowired
+    private XrpWalletRepo xrpWalletRepo;
     private final WalletFactory walletFactory = DefaultWalletFactory.getInstance();
 
     public Wallet generateWallet() {
-        return walletFactory.randomWallet(isTest).wallet();
-    }
-
-    public KeyPair getKeyPair(String publicKey, String privateKey) {
-        return KeyPair.builder().
-                publicKey(publicKey).
-                privateKey(privateKey).
-                build();
-    }
-
-    public Wallet getWallet(String publicKey, String privateKey) {
-        KeyPair key = getKeyPair(publicKey, privateKey);
-        return walletFactory.fromKeyPair(key, isTest);
+        Wallet wallet = walletFactory.randomWallet(isTest).wallet();
+        XrpWallet xrpWallet = new XrpWallet(wallet);
+        xrpWalletRepo.save(xrpWallet);
+        return wallet;
     }
 
     public Wallet getWallet(PrivateKey privateKey) {
         PublicKey publicKey = BcKeyUtils.toPublicKey(privateKey);
-        KeyPair keyPair = getKeyPair(publicKey.base16Encoded(),privateKey.base16Encoded());
+        KeyPair keyPair = getKeyPair(publicKey.base16Value(),privateKey.value().hexValue());
         log.info(keyPair);
         return walletFactory.fromKeyPair(keyPair,isTest);
     }
 
-    public AccountInfoRequestParams getAccountInfoRequest(Address classicAddress) {
-        return requestParamUtil.getAccountInfoRequest(classicAddress);
+    public Map<String, Object> walletToMap(Wallet wallet){
+        Map<String, Object> map = new HashMap<>();
+        map.put("private_key", wallet.privateKey().get());
+        map.put("public_key", wallet.publicKey());
+        map.put("address",wallet.classicAddress().toString());
+        return map;
+    }
+
+    public String derivePublicKey(PrivateKey privateKey){
+        PublicKey publicKey = BcKeyUtils.toPublicKey(privateKey);
+        return publicKey.base16Value();
+    }
+
+    public String deriveAddress(org.xrpl.xrpl4j.crypto.core.keys.PublicKey publicKey){
+        return BcAddressUtils.getInstance().deriveAddress(publicKey).value();
+    }
+
+    private KeyPair getKeyPair(String publicKey, String privateKey) {
+        return KeyPair.builder().
+                publicKey(publicKey).
+                privateKey(privateKey).
+                build();
     }
 }
