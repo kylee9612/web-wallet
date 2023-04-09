@@ -36,8 +36,6 @@ public class XrpController extends CoinController {
     private XrpClientService xrpClientService;
     @Autowired
     private XrpWalletService xrpWalletService;
-    @Autowired
-    private XrpAccountService xrpAccountService;
 
 
     public Map<String, Object> getInfo() {

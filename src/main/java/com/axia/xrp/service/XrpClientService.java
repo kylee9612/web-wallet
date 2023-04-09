@@ -67,7 +67,7 @@ public class XrpClientService {
     private XrpRequestParamUtil paramUtil;
 
     @PostConstruct
-    private void init() throws Exception {
+    private void init(){
         xrplClient = new XrplClient(HttpUrl.get(url));
         faucetClient = FaucetClient.construct(HttpUrl.get("https://faucet.altnet.rippletest.net"));
         paramUtil = new XrpRequestParamUtil();
