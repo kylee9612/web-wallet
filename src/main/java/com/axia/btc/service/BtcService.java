@@ -17,6 +17,7 @@ import org.bitcoinj.wallet.CoinSelection;
 import org.bitcoinj.wallet.Wallet;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.PostConstruct;
 import java.io.File;
@@ -38,21 +39,15 @@ public class BtcService {
 
     private NetworkParameters network;
 
-    private WalletAppKit walletAppKit;
     private Context context;
 
     @PostConstruct
     public void getTestnetParam() {
         if (isTest)
-            network = TestNet3Params.get();
+            network = MainNetParams.get();
         else
             network = MainNetParams.get();
         context = new Context(network);
-        walletAppKit = new WalletAppKit(network, Script.ScriptType.P2WPKH,null,new File("."),"peer2-testnet");
-        PeerAddress peer = new PeerAddress(network,"192.168.219.101",18333);
-        walletAppKit.setPeerNodes(peer);
-//        walletAppKit.startAsync();
-//        walletAppKit.awaitRunning();
     }
 
     public Wallet generateWallet() {
@@ -133,8 +128,6 @@ public class BtcService {
         Address address = Address.fromString(network, adr);
         Wallet wallet = Wallet.createBasic(network);
 
-//        walletAppKit.startAsync();
-//        walletAppKit.awaitRunning();
         wallet.addWatchedAddress(address, 0);
         System.out.println("wallet.getWatchedAddresses()" + wallet.getWatchedAddresses());
         return wallet.getBalance().toBtc();
@@ -146,5 +139,16 @@ public class BtcService {
         wallet.importKey(key);
         log.info(wallet.toString());
         return wallet.getBalance().toBtc();
+    }
+
+    public List<TransactionOutput> listSpendable(String address){
+        List<String> addr = new ArrayList<>();
+        addr.add(address);
+        List<Object> param = generateParam(1,99999999,addr);
+        return null;
+    }
+
+    private List<Object> generateParam(Object... obj){
+        return Arrays.stream(obj).toList();
     }
 }

@@ -45,7 +45,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Service
-@Transactional
 public class XrpClientService {
     private static final Logger log = LogManager.getLogger(XrpClientService.class);
 
@@ -71,9 +70,11 @@ public class XrpClientService {
         xrplClient = new XrplClient(HttpUrl.get(url));
         faucetClient = FaucetClient.construct(HttpUrl.get("https://faucet.altnet.rippletest.net"));
         paramUtil = new XrpRequestParamUtil();
-        String walletAddress = xrpAccountRepo.findById(1).get().getAddress();
-        XrpBlockTask xrpBlockTask = new XrpBlockTask(url,walletAddress,xrpWalletRepo,xrpAccountRepo);
-        xrpBlockTask.start();
+        xrpAccountRepo.findById(1).ifPresent(xrpAccount -> {
+            String walletAddress = xrpAccount.getAddress();
+            XrpBlockTask xrpBlockTask = new XrpBlockTask(url,walletAddress,xrpWalletRepo,xrpAccountRepo);
+            xrpBlockTask.start();
+        });
     }
 
     public Map<String, Object> getInfo() {
