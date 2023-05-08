@@ -1,8 +1,12 @@
 package com.axia.btc.util;
 
-import org.bitcoinj.wallet.Wallet;
-import org.json.simple.JSONObject;
+import com.axia.common.util.RPCClient;
+import com.axia.model.vo.NodeConfig;
 
-public class BtcUtil {
+public class BtcUtil{
+    private RPCClient rpcClient;
 
+    public BtcUtil(NodeConfig nodeConfig){
+        rpcClient = new RPCClient(nodeConfig);
+    }
 }

@@ -1,29 +1,27 @@
 package com.axia.btc.service;
 
+import com.axia.btc.util.BtcUtil;
+import com.axia.dao.slave.config.NodeConfigSlaveRepo;
+import com.axia.model.vo.NodeConfig;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bitcoinj.core.*;
 import org.bitcoinj.crypto.TransactionSignature;
-import org.bitcoinj.kits.WalletAppKit;
-import org.bitcoinj.net.discovery.DnsDiscovery;
 import org.bitcoinj.params.MainNetParams;
 import org.bitcoinj.params.TestNet3Params;
 import org.bitcoinj.script.Script;
 import org.bitcoinj.script.ScriptBuilder;
 import org.bitcoinj.store.BlockStoreException;
 import org.bitcoinj.store.MemoryBlockStore;
-import org.bitcoinj.utils.ContextPropagatingThreadFactory;
 import org.bitcoinj.wallet.CoinSelection;
 import org.bitcoinj.wallet.Wallet;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
 import javax.annotation.PostConstruct;
-import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
@@ -40,14 +38,22 @@ public class BtcService {
     private NetworkParameters network;
 
     private Context context;
+    private BtcUtil btcUtil;
+    private NodeConfig nodeConfig;
+    @Autowired
+    private NodeConfigSlaveRepo nodeConfigSlaveRepo;
 
     @PostConstruct
     public void getTestnetParam() {
         if (isTest)
-            network = MainNetParams.get();
+            network = TestNet3Params.get();
         else
             network = MainNetParams.get();
         context = new Context(network);
+        nodeConfigSlaveRepo.findById("BTC").ifPresentOrElse(
+                nodeConfig -> this.nodeConfig = nodeConfig,
+                () -> this.nodeConfig = new NodeConfig("BTC"));
+        btcUtil = new BtcUtil(nodeConfig);
     }
 
     public Wallet generateWallet() {
@@ -133,7 +139,7 @@ public class BtcService {
         return wallet.getBalance().toBtc();
     }
 
-    public BigDecimal getBalance(ECKey key){
+    public BigDecimal getBalance(ECKey key) {
         Context.propagate(context);
         Wallet wallet = Wallet.createBasic(network);
         wallet.importKey(key);
@@ -141,14 +147,14 @@ public class BtcService {
         return wallet.getBalance().toBtc();
     }
 
-    public List<TransactionOutput> listSpendable(String address){
+    public List<TransactionOutput> listSpendable(String address) {
         List<String> addr = new ArrayList<>();
         addr.add(address);
-        List<Object> param = generateParam(1,99999999,addr);
+        List<Object> param = generateParam(1, 99999999, addr);
         return null;
     }
 
-    private List<Object> generateParam(Object... obj){
+    private List<Object> generateParam(Object... obj) {
         return Arrays.stream(obj).toList();
     }
 }
