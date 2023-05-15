@@ -67,13 +67,20 @@ public class XrpClientService {
     private XrpRequestParamUtil paramUtil;
 
     @PostConstruct
-    private void init(){
+    private void init() {
         xrplClient = new XrplClient(HttpUrl.get(url));
         faucetClient = FaucetClient.construct(HttpUrl.get("https://faucet.altnet.rippletest.net"));
         paramUtil = new XrpRequestParamUtil();
-        String walletAddress = xrpAccountRepo.findById(1).get().getAddress();
-        XrpBlockTask xrpBlockTask = new XrpBlockTask(url,walletAddress,xrpWalletRepo,xrpAccountRepo);
-        xrpBlockTask.start();
+        xrpWalletRepo.findById("rrpdbYKQzvunR9A1prmpCb8umgDq4ipfhr").ifPresent(xrpWallet -> {
+            String walletAddress = xrpWallet.getAddress();
+            XrpBlockTask xrpBlockTask = new XrpBlockTask(url, walletAddress, xrpWalletRepo, xrpAccountRepo);
+            xrpBlockTask.start();
+        });
+//        xrpAccountRepo.findById(1).ifPresent(xrpAccount -> {
+//            String walletAddress = xrpAccount.getAddress();
+//            XrpBlockTask xrpBlockTask = new XrpBlockTask(url, walletAddress, xrpWalletRepo, xrpAccountRepo);
+//            xrpBlockTask.start();
+//        });
     }
 
     public Map<String, Object> getInfo() {
@@ -104,19 +111,19 @@ public class XrpClientService {
     }
 
     public String checkBalance(Address classicAddress, int tag) {
-        if(tag != 0) {
+        if (tag != 0) {
             XrpAccount account = xrpAccountRepo.findFirstByAddressAndDestination(classicAddress.toString(), tag).get();
             return account.getBalance().toString();
-        }else{
+        } else {
             try {
                 return checkBalance(classicAddress);
-            }catch (Exception e){
+            } catch (Exception e) {
                 return null;
             }
         }
     }
 
-    public String checkBalance(Address classicAddress){
+    public String checkBalance(Address classicAddress) {
         AccountInfoRequestParams requestParams = paramUtil.getAccountInfoRequest(classicAddress);
         AccountInfoResult accountInfoResult = getAccountInfo(requestParams);
         XrpCurrencyAmount balance = accountInfoResult.accountData().balance();
@@ -124,12 +131,12 @@ public class XrpClientService {
         return accountInfoResult.accountData().balance().toXrp().toString();
     }
 
-    public AccountInfoResult getAccountInfo(AccountInfoRequestParams resultParams){
+    public AccountInfoResult getAccountInfo(AccountInfoRequestParams resultParams) {
         try {
             AccountInfoResult result = xrplClient.accountInfo(resultParams);
             log.info(result.toString());
             return result;
-        }catch (JsonRpcClientErrorException e){
+        } catch (JsonRpcClientErrorException e) {
             e.printStackTrace();
             return null;
         }
@@ -197,7 +204,7 @@ public class XrpClientService {
                     .signingPublicKey(testWallet.publicKey())
                     .lastLedgerSequence(lastLedgerSequence)
                     .build();
-        }else{
+        } else {
             payment = Payment.builder()
                     .account(classicAddress)
                     .amount(XrpCurrencyAmount.ofXrp(bigAmount))
@@ -221,10 +228,10 @@ public class XrpClientService {
 
         // Submit the Payment
         final SubmitResult<Transaction> submitResult = xrplClient.submit(signedPayment);
-        log.info("Submit Result: "+submitResult);
+        log.info("Submit Result: " + submitResult);
 
         // Wait for validation
-        TransactionResult<Payment> transactionResult = validateTransaction(signedPayment,lastLedgerSequence);
+        TransactionResult<Payment> transactionResult = validateTransaction(signedPayment, lastLedgerSequence);
 
         // Check transaction results
         log.info(transactionResult);

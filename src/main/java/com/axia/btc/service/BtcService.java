@@ -56,7 +56,7 @@ public class BtcService {
     }
 
     public Wallet generateWallet() {
-        return Wallet.createDeterministic(network, Script.ScriptType.P2WPKH);
+        return Wallet.createDeterministic(network, Script.ScriptType.P2WPKH); // P2WPKH 방식으로
     }
 
     public Wallet getWallet(ECKey key) {
@@ -73,7 +73,7 @@ public class BtcService {
         walletMap.put("address", address);
         return walletMap;
     }
-
+    /**chat GPT 작품이나 안돌아감 다시 고쳐야함**/
     public Transaction createRawTransaction(ECKey key, String toAddress, long value) {
         Transaction tx = new Transaction(network);
 

@@ -29,9 +29,10 @@ public class BTCController extends CoinController {
     @Override
     @GetMapping("/generate")
     public Map<String, Object> generate() {
-        Wallet wallet = btcService.generateWallet();
-        BigInteger privateKey = Objects.requireNonNull(wallet.getActiveKeyChain().getRootKey()).getPrivKey();
-        ECKey key = ECKey.fromPrivate(privateKey);
+        Wallet wallet = btcService.generateWallet(); // wallet 의 생성
+        log.info(wallet);
+        BigInteger privateKey = Objects.requireNonNull(wallet.getActiveKeyChain().getRootKey()).getPrivKey(); // 루트키로부터 프라이빗 키를 생성
+        ECKey key = ECKey.fromPrivate(privateKey);// 타원 곡선 암호화 (Elliptic Curve Cryptography)알고리즘 으로 공개키/개인키의 쌍
         Map<String, Object> walletMap = btcService.walletFromPrivateKey(key);
         log.info("BTC Address Generated ::: " + walletMap.get("address"));
         return walletMap;
